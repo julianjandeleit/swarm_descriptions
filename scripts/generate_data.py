@@ -3,7 +3,63 @@ import logging
 from swarm_descriptions.datamodel import *
 from swarm_descriptions.description import *
 
+def mission_describer_1(mission: Mission,env_desc: EnvironmentDescriber, swarm_desc: SwarmDescriber, obj_desc: ObjectiveDescriber, rob_desc: RobotDescriber) -> str:
+    s1 = "We define a mission in the following way: "
+    s2 = env_desc(mission.environment)
+    s3 = swarm_desc(mission.swarm, rob_desc)
+    s4 = obj_desc(mission.objective)
     
+    return s1+s2+s3+s4
+
+def objective_describer_1(obj: ObjectiveFunction) -> str:
+    s1 = f"The objective of the robots is to perform the behavior {obj.type}."
+    
+    return s1
+
+def swarm_describer_1(swarm: Swarm, rob_desc: RobotDescriber) -> str:
+    s1 = "The swarm consists of the following robots:"
+    robs = []
+    for rob in swarm.elements.keys():
+        r = rob_desc(swarm.elements[rob])
+        robs.append(f"A robot called {rob}. {r}")
+        
+    robs = " ".join(robs)
+    
+    positions = []
+    for rob in swarm.elements.keys():
+        r1 = f"The robot {rob} is located at {swarm.positions[rob].position} and rotated by {swarm.positions[rob].heading}."
+        positions.append(r1)
+        
+    positions = " ".join(positions)
+    
+    return s1 + robs + positions
+
+def robot_describer_1(robot: Robot) -> str:
+    s1 = "The robot has the following actuators."
+    actuators = []
+    for act in robot.actuators.keys():
+        actuators.append(f"Actuator {act} that has the form {robot.actuators[act]}.")
+        
+    sensors = []
+    for sen in robot.sensors.keys():
+        sensors.append(f"Sensor {sen}, of the form {robot.sensors[sen]}.")
+        
+    actuators = " ".join(actuators)
+    sensors = " ".join(sensors)
+    
+    return s1 + actuators + sensors
+
+def environment_describer_1( environment: Environment) -> str:
+    s1 = f"The environment is centered at {environment.center} and has the dimensions {environment.size}."
+    s2 = f"It consists of the following elements:"
+    elems = []
+    for e in environment.elements.keys():
+        elems.append(f"An element {e} of type {environment.elements[e].type} located at {(environment.positions[e].position,environment.positions[e].heading)}.")
+        
+    elems = " ".join(elems)
+    
+    return s1+s2+elems
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     
@@ -54,63 +110,6 @@ if __name__ == "__main__":
     mission = Mission(env, swarm, objective)
     
     logging.debug(mission)
-    
-    def mission_describer_1(mission: Mission,env_desc: EnvironmentDescriber, swarm_desc: SwarmDescriber, obj_desc: ObjectiveDescriber, rob_desc: RobotDescriber) -> str:
-        s1 = "We define a mission in the following way: "
-        s2 = env_desc(mission.environment)
-        s3 = swarm_desc(mission.swarm, rob_desc)
-        s4 = obj_desc(mission.objective)
-        
-        return s1+s2+s3+s4
-    
-    def objective_describer_1(obj: ObjectiveFunction) -> str:
-        s1 = f"The objective of the robots is to perform the behavior {obj.type}."
-        
-        return s1
-    
-    def swarm_describer_1(swarm: Swarm, rob_desc: RobotDescriber) -> str:
-        s1 = "The swarm consists of the following robots:"
-        robs = []
-        for rob in swarm.elements.keys():
-            r = rob_desc(swarm.elements[rob])
-            robs.append(f"A robot called {rob}. {r}")
-            
-        robs = " ".join(robs)
-        
-        positions = []
-        for rob in swarm.elements.keys():
-            r1 = f"The robot {rob} is located at {swarm.positions[rob].position} and rotated by {swarm.positions[rob].heading}."
-            positions.append(r1)
-            
-        positions = " ".join(positions)
-        
-        return s1 + robs + positions
-    
-    def robot_describer_1(robot: Robot) -> str:
-        s1 = "The robot has the following actuators."
-        actuators = []
-        for act in robot.actuators.keys():
-            actuators.append(f"Actuator {act} that has the form {robot.actuators[act]}.")
-            
-        sensors = []
-        for sen in robot.sensors.keys():
-            sensors.append(f"Sensor {sen}, of the form {robot.sensors[sen]}.")
-            
-        actuators = " ".join(actuators)
-        sensors = " ".join(sensors)
-        
-        return s1 + actuators + sensors
-    
-    def environment_describer_1( environment: Environment) -> str:
-        s1 = f"The environment is centered at {environment.center} and has the dimensions {environment.size}."
-        s2 = f"It consists of the following elements:"
-        elems = []
-        for e in environment.elements.keys():
-            elems.append(f"An element {e} of type {environment.elements[e].type} located at {(environment.positions[e].position,environment.positions[e].heading)}.")
-            
-        elems = " ".join(elems)
-        
-        return s1+s2+elems
     
     md : MissionDescriber = mission_describer_1
     od: ObjectiveDescriber = objective_describer_1
