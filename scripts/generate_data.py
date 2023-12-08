@@ -21,12 +21,12 @@ def swarm_describer_1(swarm: Swarm, rob_desc: RobotDescriber) -> str:
     s1 = "The swarm consists of the following robots:"
     robs = []
     for id, (rob, num) in swarm.elements.items():
-        r = rob_desc(swarm.elements[rob])
+        r = rob_desc(swarm.elements[id][0])
         robs.append(f"{num} robots of type {id}. {id} robots are built the following way: {r}")
         
     robs = " ".join(robs)
     
-    r1 = f"The robots are distributed inside the area with a {swarm.distribution.method} distribution with the parameters {swarm.distribution.method_params}."
+    r1 = f"The robots are distributed inside the area with a {swarm.pos_distribution.method} distribution with the parameters {swarm.pos_distribution.method_params}."
     r2 = f" Their orientations are distributed with {swarm.heading_distribution} with {swarm.heading_distribution.method_params}."
     
     return s1 + robs + r1 + r2
@@ -47,17 +47,24 @@ def robot_describer_1(robot: Robot) -> str:
     return s1 + actuators + sensors
 
 def environment_describer_1( environment: Environment) -> str:
-    s1 = f"The environment is centered at {environment.center} and has the dimensions {environment.size}."
+    s1 = f"The environment has the dimensions {environment.size}."
     s2 = f"It consists of the following elements:"
     elems = []
-    for e in environment.elements.keys():
-        elems.append(f"An element {e} of type {environment.elements[e].type} located at {(environment.positions[e].position,environment.positions[e].heading)}.")
+    for e in environment.lights.keys():
+        elems.append(f"An light {e} located at {environment.lights[e].pose.position} with the orientation {environment.lights[e].pose.heading}.")
         
     elems = " ".join(elems)
     
     return s1+s2+elems
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Print generated data')
+    parser.add_argument('output',
+                        help='"description" or "config"')
+    args = parser.parse_args()
+    
     logging.basicConfig(level=logging.DEBUG)
     
     proximity = Sensor(
@@ -97,10 +104,10 @@ if __name__ == "__main__":
                       walls={"wall_1": obstacle}, lights={})
     
     
-    swarm = Swarm(elements={"r1": epuck, "r2": epuck}, positions={
-        "r1": Pose((1.0,0.0,0.0),(0.0,0.0,0.0)),
-        "r2": Pose((0.0,1.0,0.0),(0.0,0.0,0.0))
-    })
+    swarm = Swarm(
+        elements={"epuck":  (epuck, 5)}, 
+        heading_distribution=Distribution.get_gaussian(mean="0,0,0", stdev="360,0,0"),
+        pos_distribution=Distribution.get_uniform(min="-1,-1,0", max="1,1,0"))
     
     objective = ObjectiveFunction("aggregation")
     
@@ -108,18 +115,25 @@ if __name__ == "__main__":
     
     logging.debug(mission)
     
-    md : MissionDescriber = mission_describer_1
-    od: ObjectiveDescriber = objective_describer_1
-    sd: SwarmDescriber = swarm_describer_1
-    rd: RobotDescriber = robot_describer_1
-    ed: EnvironmentDescriber = environment_describer_1
     
-    describer = Describer(rd, ed, sd, od, md)
-    
-    description = describer.describe(mission)
-    logging.info(description)
-    
+    if args.output == "description":
+        md : MissionDescriber = mission_describer_1
+        od: ObjectiveDescriber = objective_describer_1
+        sd: SwarmDescriber = swarm_describer_1
+        rd: RobotDescriber = robot_describer_1
+        ed: EnvironmentDescriber = environment_describer_1
         
         
+        
+        describer = Describer(rd, ed, sd, od, md)
+        
+        description = describer.describe(mission)
+        
+        print(description)
+        
+    else:
+        skeleton = ET.parse("../ressources/skeleton.argos").getroot()
+        config = Configurator().generate_config(skeleton, mission)
+        xml = ET.tostring(config).decode("ascii")
+        print(xml)
     
-    mv: MissionVisitor = []

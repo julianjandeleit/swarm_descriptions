@@ -26,6 +26,14 @@ class Pose:
 class Distribution:
     method: str
     method_params: dict[str, str]
+    
+    def get_uniform(min: str, max: str):
+        """ e.g. min="-1,-1,0", max="1,1,0" """
+        return Distribution(method="uniform",method_params={"min": min, "max": max})
+
+    def get_gaussian(mean: str, stdev: str):
+        """ e.g. mean="0,0,0", stdev=""360,0,0"" """
+        return Distribution(method="gaussian",method_params={"mean": mean, "std_dev": stdev})
 
 @dataclass
 class Robot:
@@ -45,9 +53,7 @@ class Light:
 class Environment:
     size: tuple[float,float,float]
     lights: dict[str, Light]
-    walls: dict[str, Wall]
-    
-    
+    walls: dict[str, Wall] 
 
 @dataclass
 class Swarm:
@@ -66,5 +72,5 @@ class Mission:
     objective: ObjectiveFunction
     
     def __repr__(self) -> str:
-        return f"({list(self.environment.elements.keys())}, {list(self.swarm.elements.keys())}, {self.objective.type})"
+        return f"({list(self.environment.lights.keys())},{list(self.environment.walls.keys())}, {list(self.swarm.elements.keys())}, {self.objective.type})"
 
