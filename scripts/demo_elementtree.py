@@ -120,8 +120,7 @@ loop
 # ## Apply placeholder replacement
 # %%
 replace_placeholder_mut(root, "loop-placeholder", loop)
-replace_placeholder_mut(root, "lights-placeholder", lights)
-replace_placeholder_mut(root, "walls-placeholder", walls)
+replace_placeholder_mut(root, "environment-placeholder", lights + walls)
 replace_placeholder_mut(root, "robots-placeholder", robots)
 # %%
 print(ET.tostring(root, encoding="ascii", xml_declaration=True).decode("ascii"))

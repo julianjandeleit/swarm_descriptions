@@ -21,6 +21,11 @@ class Actuator:
 class Pose:
     position: tuple[float, float, float]
     heading: tuple[float,float,float]
+    
+@dataclass
+class Distribution:
+    method: str
+    method_params: dict[str, str]
 
 @dataclass
 class Robot:
@@ -28,21 +33,27 @@ class Robot:
     actuators: dict[str,Actuator]
 
 @dataclass
-class EnvElement:
-    type: str
+class Wall:
+    size: tuple[float,float,float]
+    pose: Pose
+    
+@dataclass
+class Light:
+    pose: Pose
 
 @dataclass
 class Environment:
     size: tuple[float,float,float]
-    center: tuple[float,float,float]
-    elements: dict[str,EnvElement]
-    positions: dict[str,Pose]
+    lights: dict[str, Light]
+    walls: dict[str, Wall]
+    
     
 
 @dataclass
 class Swarm:
-    elements: dict[str,Robot]
-    positions: dict[str,Pose]
+    elements: dict[str,(Robot, int)] # maps robot type(id) to list of robots of that type
+    pos_distribution: Distribution
+    heading_distribution: Distribution
 
 @dataclass
 class ObjectiveFunction:

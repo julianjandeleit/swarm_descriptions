@@ -2,6 +2,7 @@ import numpy as np
 import logging
 from swarm_descriptions.datamodel import *
 from swarm_descriptions.description import *
+from swarm_descriptions.configfiles import *
 
 def mission_describer_1(mission: Mission,env_desc: EnvironmentDescriber, swarm_desc: SwarmDescriber, obj_desc: ObjectiveDescriber, rob_desc: RobotDescriber) -> str:
     s1 = "We define a mission in the following way: "
@@ -19,20 +20,16 @@ def objective_describer_1(obj: ObjectiveFunction) -> str:
 def swarm_describer_1(swarm: Swarm, rob_desc: RobotDescriber) -> str:
     s1 = "The swarm consists of the following robots:"
     robs = []
-    for rob in swarm.elements.keys():
+    for id, (rob, num) in swarm.elements.items():
         r = rob_desc(swarm.elements[rob])
-        robs.append(f"A robot called {rob}. {r}")
+        robs.append(f"{num} robots of type {id}. {id} robots are built the following way: {r}")
         
     robs = " ".join(robs)
     
-    positions = []
-    for rob in swarm.elements.keys():
-        r1 = f"The robot {rob} is located at {swarm.positions[rob].position} and rotated by {swarm.positions[rob].heading}."
-        positions.append(r1)
-        
-    positions = " ".join(positions)
+    r1 = f"The robots are distributed inside the area with a {swarm.distribution.method} distribution with the parameters {swarm.distribution.method_params}."
+    r2 = f" Their orientations are distributed with {swarm.heading_distribution} with {swarm.heading_distribution.method_params}."
     
-    return s1 + robs + positions
+    return s1 + robs + r1 + r2
 
 def robot_describer_1(robot: Robot) -> str:
     s1 = "The robot has the following actuators."
@@ -94,10 +91,10 @@ if __name__ == "__main__":
     logging.debug(epuck)
     
     
-    obstacle = EnvElement(type="obstacle")
+    obstacle = Wall(size=(0.01,0.66,0.08),pose=Pose((1.0,1.0,0.0), (0.0,0.0,0.0)))
     
-    env = Environment(size=(10.0,10.0,2.0), center=(0.0,0.0,0.0),
-                      elements={"obs1": obstacle}, positions={"obs1": Pose((1.0,1.0,0.0), (0.0,0.0,0.0))})
+    env = Environment(size=(10.0,10.0,2.0),
+                      walls={"wall_1": obstacle}, lights={})
     
     
     swarm = Swarm(elements={"r1": epuck, "r2": epuck}, positions={
@@ -121,3 +118,8 @@ if __name__ == "__main__":
     
     description = describer.describe(mission)
     logging.info(description)
+    
+        
+        
+    
+    mv: MissionVisitor = []
