@@ -4,7 +4,7 @@ from typing import Protocol
 from swarm_descriptions.datamodel import *
 import xml.etree.ElementTree as ET
 from copy import deepcopy
-
+import logging
 # convenience functions
 
 def get_element(root, tag) -> ET.Element | None:
@@ -24,7 +24,14 @@ def replace_placeholder_mut(root, placeholder_tag: ET.Element, elements: list[ET
 def t2s(t:[float,float,float]) -> str:
     if isinstance(t, str):
         return t
-    return f"{t[0]},{t[1]},{t[2]}"
+    if isinstance(t, float):
+        return str(t)
+    if len(t) == 3:
+        return f"{t[0]},{t[1]},{t[2]}"
+    if len(t) == 2:
+        return f"{t[0]},{t[1]}"
+    logging.critical(f"t2s not implemented for {t}")
+    exit(1)
 # element builders
 
 def build_entity(id:str, num: int):
@@ -79,6 +86,33 @@ def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
     </T>"""
     loop = ET.fromstring(loop_data)
     loop = list(loop)
+
+    el_obj = ET.Element("objective", attrib={"type": obj.type})
+
+    if isinstance(obj, ObjAggregation):
+        op = ET.Element("objective-params", attrib={"light":obj.light, "radius": str(obj.radius)})
+        el_obj.append(op)
+        
+    if isinstance(obj, ObjFlocking):
+        op = ET.Element("objective-params", attrib={"density": str(obj.density), "velocity": str(obj.velocity)})
+        el_obj.append(op)
+        
+    if isinstance(obj, ObjForaging):
+        op = ET.Element("objective-params")
+        op.append(ET.Element("circle", attrib={"position": t2s(obj.black_position), "radius":str(obj.black_radius), "color":"black"}))
+        op.append(ET.Element("circle", attrib={"position": t2s(obj.white_position), "radius":str(obj.white_radius), "color":"white"}))
+        el_obj.append(op)
+        
+    if isinstance(obj, ObjDistribution):
+        op = ET.Element("objective-params", attrib={"area":t2s(obj.area), "connection_range": str(obj.max_connection_dist)})
+        el_obj.append(op)
+        
+    if isinstance(obj, ObjConnection):
+        op = ET.Element("objective-params", attrib={"light1": obj.light1, "light2":obj.light2,"connection_range": t2s(obj.connection_range)})
+        el_obj.append(op)
+        
+    loop.append(el_obj)
+        
     return loop
 
 def env_visitor(env: Environment) -> list[ET.Element]:

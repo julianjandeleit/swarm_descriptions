@@ -77,10 +77,19 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Print generated data')
     parser.add_argument('output',
-                        help='"description" or "config"')
+                        help='"description", "config", "write-mission", "read-mission"')
+    parser.add_argument("--logging", choices=["critical","info","debug"], default="info")
     args = parser.parse_args()
     
-    logging.basicConfig(level=logging.DEBUG)
+    def arg_to_loglevel(choice):
+        if choice == "critical":
+            return logging.CRITICAL
+        if choice == "info":
+            return logging.INFO
+        if choice == "debug":
+            return logging.DEBUG
+        return logging.INFO
+    logging.basicConfig(level=arg_to_loglevel(args.logging))
     
     proximity = Sensor(
         variables=["prox0","prox1","prox2","prox3","prox4","prox5","prox6","prox7"],
@@ -100,15 +109,18 @@ if __name__ == "__main__":
         values=[str(v) for v in np.linspace(-0.12,0.12,num=100)]
     )
     
-    epuck = Robot(
-        sensors={
-            "proximity": proximity,
-            "light": light,
-            "ground": ground,
-        },
-        actuators={
-            "wheels": wheels
-        })
+    # This is the proper epuck definition but we won't use it here.
+    # epuck = Robot(
+    #     sensors={
+    #         "proximity": proximity,
+    #         "light": light,
+    #         "ground": ground,
+    #     },
+    #     actuators={
+    #         "wheels": wheels
+    #     })
+    
+    epuck = Robot(sensors={}, actuators={})
     
     logging.debug(epuck)
     
@@ -136,7 +148,8 @@ if __name__ == "__main__":
     
     mission = Mission(env, swarm, objective)
     
-    logging.debug(mission)
+    import yaml
+    logging.debug(yaml.dump(mission))
     
     
     if args.output == "description":
@@ -146,17 +159,25 @@ if __name__ == "__main__":
         rd: RobotDescriber = robot_describer_1
         ed: EnvironmentDescriber = environment_describer_1
         
-        
-        
         describer = Describer(rd, ed, sd, od, md)
         
         description = describer.describe(mission)
         
         print(description)
         
-    else:
+    elif args.output == "config":
         skeleton = ET.parse("../ressources/skeleton.argos").getroot()
         config = Configurator().generate_config(skeleton, mission)
-        xml = ET.tostring(config).decode("ascii")
-        print(xml)
+        xml_config = ET.tostring(config).decode("ascii")
+        
+        print(xml_config)
+    elif args.output == "write-mission":
+        print(yaml.dump(mission))
+    elif args.output == "read-mission":
+        import sys
+        yml = sys.stdin.readlines()
+        yml = "".join(yml)
+        logging.debug(yml)
+        mission = yaml.load(yml, Loader=yaml.Loader)
+        logging.info(mission)
     
