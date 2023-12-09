@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 @dataclass
 class Sensor:
@@ -64,6 +65,42 @@ class Swarm:
 @dataclass
 class ObjectiveFunction:
     type: str
+    
+class ObjAggregation(ObjectiveFunction):
+
+    def __init__(self,radius: float, light_id: str):
+        self.type = "aggregation"
+        self.radius = radius
+        self.light = light_id
+    
+class ObjFlocking(ObjectiveFunction):
+    def __init__(self, density: float, velocity: float):
+        self.type = "flocking"
+        self.density = density
+        self.velocity = velocity
+    
+class ObjForaging(ObjectiveFunction):
+    def __init__(self, black_pos: (float,float,float), black_r: float, white_pos: (float,float,float), white_r: float):
+        self.type = "foraging"
+        self.black_position = black_pos
+        self.black_radius = black_r
+        self.white_position = white_pos
+        self.white_radius = white_r
+    
+class ObjDistribution(ObjectiveFunction):
+    
+    def __init__(self, area: tuple[float,float], max_connection_distance: float):
+        self.type = "distribution"
+        self.area = area
+        self.max_connection_dist = max_connection_distance
+    
+class ObjConnection(ObjectiveFunction):
+    def __init__(self, light1_id: str, light2_id: str, connection_range: float):
+        self.type = "connection"
+        self.light1 = light1_id
+        self.light2 = light2_id
+        self.connection_range = connection_range
+        
 
 @dataclass
 class Mission:

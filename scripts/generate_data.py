@@ -13,9 +13,24 @@ def mission_describer_1(mission: Mission,env_desc: EnvironmentDescriber, swarm_d
     return s1+s2+s3+s4
 
 def objective_describer_1(obj: ObjectiveFunction) -> str:
-    s1 = f"The objective of the robots is to perform the behavior {obj.type}."
+    s1 = f"The objective of the robots is to perform the behavior '{obj.type}': "
     
-    return s1
+    s2 = ""
+    if isinstance(obj, ObjAggregation):
+        s2 = f"The robots should aggregate at light {obj.light} within a radius of {obj.radius}m. "
+        
+    if isinstance(obj, ObjFlocking):
+        s2 = f"The robots should move together in a coordinated way with velocity {obj.velocity} m/s and a density of {obj.density} robots per m². "
+        
+    if isinstance(obj, ObjForaging):
+        s2 = f"The robots should bring objects from the black area located at {obj.black_position} to the white area located at {obj.white_position}. The white area has a radius of {obj.white_radius}. The black area has a radius of {obj.black_radius}. "
+        
+    if isinstance(obj, ObjDistribution):
+        s2 = f"The robots should cover an area of dimensions {obj.area} while staying connected to each other. Two robots count as connected, when their distance is not larger than {obj.max_connection_dist}m . "
+    
+    if isinstance(obj, ObjConnection):
+        s2 = f"The robots should connect light '{obj.light1}' with light '{obj.light2}' by forming a line between the lights. The robots should not be clustered. This would not form a line. Their pairwise distance should not be below the connection range {obj.connection_range}m. "
+    return s1 + s2
 
 def swarm_describer_1(swarm: Swarm, rob_desc: RobotDescriber) -> str:
     s1 = "The swarm consists of the following robots:"
@@ -100,8 +115,11 @@ if __name__ == "__main__":
     
     obstacle = Wall(size=(0.01,0.66,0.08),pose=Pose((1.0,1.0,0.0), (0.0,0.0,0.0)))
     
+    light_1 = Light(Pose((0.5,0.2,0.0,),(360,0,0)))
+    light_2 = Light(Pose((-0.5,0.75,0.0,),(220,0,0)))
+    
     env = Environment(size=(10.0,10.0,2.0),
-                      walls={"wall_1": obstacle}, lights={})
+                      walls={"wall_1": obstacle}, lights={"light_1": light_1, "light_2": light_2})
     
     
     swarm = Swarm(
@@ -109,7 +127,12 @@ if __name__ == "__main__":
         heading_distribution=Distribution.get_gaussian(mean="0,0,0", stdev="360,0,0"),
         pos_distribution=Distribution.get_uniform(min="-1,-1,0", max="1,1,0"))
     
-    objective = ObjectiveFunction("aggregation")
+    objective = ObjAggregation(1.2, "light_1")
+    #objective = ObjFlocking(density=2.5, velocity=0.2)
+    #objective = ObjForaging((0.25,0.25), 0.2, (0.1,0.1), 0.4)
+    #objective = ObjDistribution((2.5,7.5), max_connection_distance=0.3)
+    #objective = ObjConnection("light_1", "light_2", 0.2)
+    
     
     mission = Mission(env, swarm, objective)
     
