@@ -1,183 +1,58 @@
 import numpy as np
 import logging
-from swarm_descriptions.datamodel import *
-from swarm_descriptions.description import *
-from swarm_descriptions.configfiles import *
+import yaml
+import argparse
+import pathlib
+import sys
+from swarm_descriptions import missions
+from swarm_descriptions import descriptions
+from swarm_descriptions.configfiles import ET, Configurator, config_to_string
 
-def mission_describer_1(mission: Mission,env_desc: EnvironmentDescriber, swarm_desc: SwarmDescriber, obj_desc: ObjectiveDescriber, rob_desc: RobotDescriber) -> str:
-    s1 = "We define a mission in the following way: "
-    s2 = env_desc(mission.environment)
-    s3 = swarm_desc(mission.swarm, rob_desc)
-    s4 = obj_desc(mission.objective)
-    
-    return s1+s2+s3+s4
 
-def objective_describer_1(obj: ObjectiveFunction) -> str:
-    s1 = f"The objective of the robots is to perform the behavior '{obj.type}': "
-    
-    s2 = ""
-    if isinstance(obj, ObjAggregation):
-        s2 = f"The robots should aggregate at light {obj.light} within a radius of {obj.radius}m. "
-        
-    if isinstance(obj, ObjFlocking):
-        s2 = f"The robots should move together in a coordinated way with velocity {obj.velocity} m/s and a density of {obj.density} robots per m². "
-        
-    if isinstance(obj, ObjForaging):
-        s2 = f"The robots should bring objects from the black area located at {obj.black_position} to the white area located at {obj.white_position}. The white area has a radius of {obj.white_radius}. The black area has a radius of {obj.black_radius}. "
-        
-    if isinstance(obj, ObjDistribution):
-        s2 = f"The robots should cover an area of dimensions {obj.area} while staying connected to each other. Two robots count as connected, when their distance is not larger than {obj.max_connection_dist}m . "
-    
-    if isinstance(obj, ObjConnection):
-        s2 = f"The robots should connect light '{obj.light1}' with light '{obj.light2}' by forming a line between the lights. The robots should not be clustered. This would not form a line. Their pairwise distance should not be below the connection range {obj.connection_range}m. "
-    return s1 + s2
+def arg_to_loglevel(choice):
+    if choice == "critical":
+        return logging.CRITICAL
+    if choice == "info":
+        return logging.INFO
+    if choice == "debug":
+        return logging.DEBUG
+    return logging.INFO
 
-def swarm_describer_1(swarm: Swarm, rob_desc: RobotDescriber) -> str:
-    s1 = "The swarm consists of the following robots:"
-    robs = []
-    for id, (rob, num) in swarm.elements.items():
-        r = rob_desc(swarm.elements[id][0])
-        robs.append(f"{num} robots of type {id}. {id} robots are built the following way: {r}")
-        
-    robs = " ".join(robs)
-    
-    r1 = f"The robots are distributed inside the area with a {swarm.pos_distribution.method} distribution with the parameters {swarm.pos_distribution.method_params}."
-    r2 = f" Their orientations are distributed with {swarm.heading_distribution} with {swarm.heading_distribution.method_params}."
-    
-    return s1 + robs + r1 + r2
-
-def robot_describer_1(robot: Robot) -> str:
-    s1 = "The robot has the following actuators."
-    actuators = []
-    for act in robot.actuators.keys():
-        actuators.append(f"Actuator {act} that has the form {robot.actuators[act]}.")
-        
-    sensors = []
-    for sen in robot.sensors.keys():
-        sensors.append(f"Sensor {sen}, of the form {robot.sensors[sen]}.")
-        
-    actuators = " ".join(actuators)
-    sensors = " ".join(sensors)
-    
-    return s1 + actuators + sensors
-
-def environment_describer_1( environment: Environment) -> str:
-    s1 = f"The environment has the dimensions {environment.size}."
-    s2 = f"It consists of the following elements:"
-    elems = []
-    for e in environment.lights.keys():
-        elems.append(f"An light {e} located at {environment.lights[e].pose.position} with the orientation {environment.lights[e].pose.heading}.")
-        
-    elems = " ".join(elems)
-    
-    return s1+s2+elems
 
 if __name__ == "__main__":
-    import argparse
 
     parser = argparse.ArgumentParser(description='Print generated data')
+
     parser.add_argument('output',
                         help='"description", "config", "write-mission", "read-mission"')
-    parser.add_argument("--logging", choices=["critical","info","debug"], default="info")
+    parser.add_argument(
+        "--logging", choices=["critical", "info", "debug"], default="info")
+    parser.add_argument("--template", type=pathlib.Path, help="path to template argos file",
+                        default="ressources/skeleton.argos")
+
     args = parser.parse_args()
-    
-    def arg_to_loglevel(choice):
-        if choice == "critical":
-            return logging.CRITICAL
-        if choice == "info":
-            return logging.INFO
-        if choice == "debug":
-            return logging.DEBUG
-        return logging.INFO
     logging.basicConfig(level=arg_to_loglevel(args.logging))
-    
-    proximity = Sensor(
-        variables=["prox0","prox1","prox2","prox3","prox4","prox5","prox6","prox7"],
-        values=[str(v) for v in np.linspace(0,1,num=100)])
-    
-    light = Sensor(
-        variables=[f"light{i}" for i in range(7)],
-        values=[str(v) for v in np.linspace(0,1,num=100)])
-    
-    ground = Sensor(
-        variables=[f"ground{i}" for i in range(3)],
-        values=["black", "gray", "white"]
-    )
-    
-    wheels = Actuator(
-        variables=["vl", "vr"],
-        values=[str(v) for v in np.linspace(-0.12,0.12,num=100)]
-    )
-    
-    # This is the proper epuck definition but we won't use it here.
-    # epuck = Robot(
-    #     sensors={
-    #         "proximity": proximity,
-    #         "light": light,
-    #         "ground": ground,
-    #     },
-    #     actuators={
-    #         "wheels": wheels
-    #     })
-    
-    epuck = Robot(sensors={}, actuators={})
-    
-    logging.debug(epuck)
-    
-    
-    obstacle = Wall(size=(0.01,0.66,0.08),pose=Pose((1.0,1.0,0.0), (0.0,0.0,0.0)))
-    
-    light_1 = Light(Pose((0.5,0.2,0.0,),(360,0,0)))
-    light_2 = Light(Pose((-0.5,0.75,0.0,),(220,0,0)))
-    
-    env = Environment(size=(10.0,10.0,2.0),
-                      walls={"wall_1": obstacle}, lights={"light_1": light_1, "light_2": light_2})
-    
-    
-    swarm = Swarm(
-        elements={"epuck":  (epuck, 5)}, 
-        heading_distribution=Distribution.get_gaussian(mean="0,0,0", stdev="360,0,0"),
-        pos_distribution=Distribution.get_uniform(min="-1,-1,0", max="1,1,0"))
-    
-    objective = ObjAggregation(1.2, "light_1")
-    #objective = ObjFlocking(density=2.5, velocity=0.2)
-    #objective = ObjForaging((0.25,0.25), 0.2, (0.1,0.1), 0.4)
-    #objective = ObjDistribution((2.5,7.5), max_connection_distance=0.3)
-    #objective = ObjConnection("light_1", "light_2", 0.2)
-    
-    
-    mission = Mission(env, swarm, objective)
-    
-    import yaml
-    logging.debug(yaml.dump(mission))
-    
-    
+
     if args.output == "description":
-        md : MissionDescriber = mission_describer_1
-        od: ObjectiveDescriber = objective_describer_1
-        sd: SwarmDescriber = swarm_describer_1
-        rd: RobotDescriber = robot_describer_1
-        ed: EnvironmentDescriber = environment_describer_1
-        
-        describer = Describer(rd, ed, sd, od, md)
-        
-        description = describer.describe(mission)
-        
+
+        describer = descriptions.aggregation.sample_describer()
+        params = missions.aggregation.sample_params()
+        description = describer(params)
+
         print(description)
-        
+
     elif args.output == "config":
-        skeleton = ET.parse("../ressources/skeleton.argos").getroot()
-        config = Configurator().generate_config(skeleton, mission)
-        xml_config = ET.tostring(config).decode("ascii")
-        
-        print(xml_config)
+        skeleton = ET.parse(args.template).getroot()
+        config = Configurator().generate_config(
+            skeleton, missions.aggregation.get_mission(missions.aggregation.sample_params()))
+        print(config_to_string(config))
+
     elif args.output == "write-mission":
-        print(yaml.dump(mission))
+        print(yaml.dump(missions.aggregation.get_mission()))
+
     elif args.output == "read-mission":
-        import sys
         yml = sys.stdin.readlines()
         yml = "".join(yml)
         logging.debug(yml)
         mission = yaml.load(yml, Loader=yaml.Loader)
         logging.info(mission)
-    
