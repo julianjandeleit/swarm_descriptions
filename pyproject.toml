@@ -4,7 +4,7 @@ description = "Generate AuToMoDe config files and natural language descriptions 
 version = "0.0.1"
 license = "MIT"
 requires-python = ">=3.10"
-dependencies = ["numpy", "pyyaml"]
+dependencies = ["numpy","pandas", "pyyaml", "pyarrow"]
 
 [build-system]
 requires = ["hatchling"]

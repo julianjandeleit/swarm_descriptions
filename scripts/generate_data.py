@@ -8,7 +8,8 @@ from swarm_descriptions import missions
 from swarm_descriptions import descriptions
 from swarm_descriptions.configfiles import ET, Configurator, config_to_string
 from swarm_descriptions.utils import sample_describer_missions
-
+import pandas as pd
+from dataclasses import asdict
 
 def arg_to_loglevel(choice):
     if choice == "critical":
@@ -25,11 +26,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Print generated data')
 
     parser.add_argument('output',
-                        help='"description", "config", "write-mission", "read-mission"')
+                        help='"description", "config", "write-mission", "read-mission", "dataset"')
     parser.add_argument(
         "--logging", choices=["critical", "info", "debug"], default="info")
     parser.add_argument("--template", type=pathlib.Path, help="path to template argos file",
                         default="ressources/skeleton.argos")
+    
+    parser.add_argument("--N", type=int, default=None, help="number of rows to generate for dataset")
+    parser.add_argument("--out", type=pathlib.Path, default=None, help="output path of generated dataset")
 
     args = parser.parse_args()
     logging.basicConfig(level=arg_to_loglevel(args.logging))
@@ -65,3 +69,27 @@ if __name__ == "__main__":
         logging.debug(yml)
         mission = yaml.load(yml, Loader=yaml.Loader)
         logging.info(mission)
+        
+    elif args.output == "dataset":
+        n_rows = args.N
+        out = args.out
+        logging.debug("n_rows="+str(n_rows))
+        if not isinstance(n_rows, int):
+            logging.error("Number of rows is not valid or not defined. Provide number of rows with -N.")
+            exit(1)
+            
+        if out is None:
+            logging.error("Invalid outpath. Provide valid outpath with --out. ")
+            exit(1)
+        
+        rows = []    
+        for n in range(n_rows):
+            describer, get_mission, params, labels = sample_describer_missions(dm_modules)
+            mission_label = labels[0]
+            description_label = labels[1]
+            
+            rows.append({"describer": describer.__name__, "get_mission": get_mission.__name__, "params_type": params.__class__.__name__, "params": asdict(params), "mission_label": mission_label, "desscription_label": description_label})
+
+        dataset = pd.DataFrame(rows)
+        logging.debug(dataset.params_type.head())
+        dataset.to_feather(out)
