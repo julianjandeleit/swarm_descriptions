@@ -88,6 +88,8 @@ def sample_describer_missions(dm_modules: list):
 
     # Sample parameters based on the selected module
     params = selected_pair[0].sample_params()
-
+    
+    get_mission = selected_pair[0].get_mission
+    mission_types = selected_pair[0].__name__, selected_pair[1].__name__
     # Return both the describer function and the sampled parameters
-    return describer_function, params
+    return describer_function, get_mission, params, mission_types

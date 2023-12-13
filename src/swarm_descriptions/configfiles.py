@@ -7,6 +7,7 @@ from copy import deepcopy
 import logging
 from xml.dom import minidom
 from xml.dom.minidom import parseString
+from swarm_descriptions.utils import truncate_floats
 # convenience functions
 
 
@@ -174,7 +175,7 @@ def config_to_string(config: ET.Element) -> ET.Element:
         return '\n'.join([line for line in parseString(data).toprettyxml(indent=' '*2).split('\n') if line.strip()])
     xmlstr = minidom.parseString(
         ET.tostring(config)).toprettyxml(indent="   ")
-    return pretty_print(xmlstr)
+    return truncate_floats(pretty_print(xmlstr))
 
 
 @dataclass

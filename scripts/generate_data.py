@@ -34,24 +34,28 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logging.basicConfig(level=arg_to_loglevel(args.logging))
 
+    dm_modules = [
+        (missions.aggregation, descriptions.aggregation),
+        (missions.flocking, descriptions.flocking),
+        (missions.foraging, descriptions.foraging),
+        (missions.distribution, descriptions.distribution),
+        (missions.connection, descriptions.connection)
+    ]
+
+    describer, get_mission, params, labels = sample_describer_missions(dm_modules)
+    logging.info(f"sampled {labels}")
+    
     if args.output == "description":
 
-        dm_modules = [
-            (missions.aggregation, descriptions.aggregation),
-            (missions.flocking, descriptions.flocking),
-        ]
-
-        describer, params = sample_describer_missions(dm_modules)
         description = describer(params)
-
         print(description)
 
     elif args.output == "config":
         skeleton = ET.parse(args.template).getroot()
         config = Configurator().generate_config(
-            skeleton, missions.aggregation.get_mission(missions.aggregation.sample_params()))
+            skeleton, get_mission(params))
         print(config_to_string(config))
-
+        
     elif args.output == "write-mission":
         print(yaml.dump(missions.aggregation.get_mission()))
 
