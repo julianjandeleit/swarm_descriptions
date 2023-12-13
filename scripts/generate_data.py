@@ -7,6 +7,7 @@ import sys
 from swarm_descriptions import missions
 from swarm_descriptions import descriptions
 from swarm_descriptions.configfiles import ET, Configurator, config_to_string
+from swarm_descriptions.utils import sample_describer_missions
 
 
 def arg_to_loglevel(choice):
@@ -35,8 +36,12 @@ if __name__ == "__main__":
 
     if args.output == "description":
 
-        describer = descriptions.aggregation.sample_describer()
-        params = missions.aggregation.sample_params()
+        dm_modules = [
+            (missions.aggregation, descriptions.aggregation),
+            (missions.flocking, descriptions.flocking),
+        ]
+
+        describer, params = sample_describer_missions(dm_modules)
         description = describer(params)
 
         print(description)

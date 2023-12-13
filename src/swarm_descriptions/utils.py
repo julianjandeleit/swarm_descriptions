@@ -73,3 +73,21 @@ def truncate_floats(input_string):
     result_string = re.sub(float_pattern, truncate, input_string)
 
     return result_string
+
+
+def sample_describer_missions(dm_modules: list):
+    """Get describer and mission params from list of describer-mission modules.
+    dm_modules should contain pairs of corresponding modules
+    that can be used together. 
+    First element is aggregation module, second is description module.
+
+    Example: [(missions.aggregation, descriptions.aggregation)]
+    """
+    selected_pair = random.choice(dm_modules)
+    describer_function = selected_pair[1].sample_describer()
+
+    # Sample parameters based on the selected module
+    params = selected_pair[0].sample_params()
+
+    # Return both the describer function and the sampled parameters
+    return describer_function, params

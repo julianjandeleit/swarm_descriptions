@@ -33,5 +33,5 @@ def describer_3(params: AggregationParams):
         desc += f"The boundaries of this space are defined by rectangular walls, creating an enclosure measuring {params.wall_params['length']} by {params.wall_params['width']}. "
     elif params.walls_type == "circular":
         desc += f"Enveloping the area is a circular wall, meticulously crafted with a radius of {params.wall_params['radius']} and composed of {params.wall_params['num_walls']} segments. "
-    desc += f"Within this dynamic setting, two guiding lights illuminate the surroundings: Light_1 at {params.light_1} and Light_2 at {params.light_2}. The mission unfolds with the objective of aggregating within a range of {params.agg_radius} around Light_1."
+    desc += f"Within this setting, two lights illuminate the surroundings: Light_1 at {params.light_1} and Light_2 at {params.light_2}. The mission unfolds with the objective of aggregating within a range of {params.agg_radius} around Light_1."
     return utils.truncate_floats(desc)
