@@ -2,7 +2,11 @@ from swarm_descriptions.datamodel import *
 import math
 import re
 import random
-
+import pandas as pd
+from importlib import import_module
+import logging
+from copy import deepcopy
+from dataclasses import asdict
 
 def generate_square_of_walls(length, width):
     """
@@ -90,6 +94,45 @@ def sample_describer_missions(dm_modules: list):
     params = selected_pair[0].sample_params()
     
     get_mission = selected_pair[0].get_mission
-    mission_types = selected_pair[0].__name__, selected_pair[1].__name__
+    mission_types = selected_pair[0], selected_pair[1]
     # Return both the describer function and the sampled parameters
     return describer_function, get_mission, params, mission_types
+
+
+
+def save_mission_dataset(path, dataset: pd.DataFrame):
+    required_columns = {"describer", "get_mission", "params_type", "params", "mission_type", "description_type"}
+    if not (required_columns.issubset(dataset.columns) and len(dataset.columns) == len(required_columns)):
+        logging.error(f"saving mission dataset with invalid data. Required columns (exact): {required_columns}. ")
+        exit(1)
+    dataset = dataset.copy() # to avoid mutating out of function
+    dataset.describer = dataset.describer.map(lambda x: x.__name__)
+    dataset.get_mission = dataset.get_mission.map(lambda x: x.__name__)
+    dataset.params_type = dataset.params_type.map(lambda x: x.__class__.__name__)
+    dataset.params = dataset.params.map(asdict)
+    dataset.mission_type = dataset.mission_type.map(lambda x: x.__name__)
+    dataset.description_type = dataset.description_type.map(lambda x: x.__name__)
+        
+    dataset.to_feather(path)
+
+def load_mission_dataset(path):
+    df = pd.read_feather(path)
+    import_from = lambda row: getattr(row.iloc[1],row.iloc[0])
+
+    def instantiate_dict(row):
+            dct = row.iloc[0]
+            # to_feather makes dict contain keys that were not originally present
+            for k,v  in list(dct.items()):
+                if v is None:
+                    del dct[k]
+
+            return row.iloc[1](**dct)
+
+    df.mission_type = df.mission_type.map(import_module)
+    df.description_type = df.description_type.map(import_module)
+    df.describer = df[["describer", "description_type"]].apply(import_from, axis=1)
+    df.get_mission = df[["get_mission", "mission_type"]].apply(import_from, axis=1)
+    df.params_type = df[["params_type", "mission_type"]].apply(import_from, axis=1)
+    df.params = df[["params", "params_type"]].apply(instantiate_dict,axis=1)
+    
+    return df

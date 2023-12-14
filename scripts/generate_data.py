@@ -7,7 +7,7 @@ import sys
 from swarm_descriptions import missions
 from swarm_descriptions import descriptions
 from swarm_descriptions.configfiles import ET, Configurator, config_to_string
-from swarm_descriptions.utils import sample_describer_missions
+from swarm_descriptions.utils import sample_describer_missions, save_mission_dataset
 import pandas as pd
 from dataclasses import asdict
 
@@ -84,12 +84,12 @@ if __name__ == "__main__":
         
         rows = []    
         for n in range(n_rows):
-            describer, get_mission, params, labels = sample_describer_missions(dm_modules)
-            mission_label = labels[0]
-            description_label = labels[1]
+            describer, get_mission, params, modules = sample_describer_missions(dm_modules)
+            mission_label = modules[0]
+            description_label = modules[1]
             
-            rows.append({"describer": describer.__name__, "get_mission": get_mission.__name__, "params_type": params.__class__.__name__, "params": asdict(params), "mission_label": mission_label, "desscription_label": description_label})
+            rows.append({"describer": describer, "get_mission": get_mission, "params_type": params, "params": params, "mission_type": mission_label, "description_type": description_label})
 
         dataset = pd.DataFrame(rows)
         logging.debug(dataset.params_type.head())
-        dataset.to_feather(out)
+        save_mission_dataset(out, dataset)
