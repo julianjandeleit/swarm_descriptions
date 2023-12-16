@@ -181,11 +181,56 @@ def config_to_string(config: ET.Element) -> ET.Element:
 @dataclass
 class Configurator:
 
+    def generate_config_params(self, mission: Mission) -> ET.Element:
+        """only return params that change.
+                
+        this replaces the template, however it may be simpler to learn only the configuration params that change instead.
+        this config would then later be needed to be parsed and replaced in the template
+        """
+        swarm_elems = swarm_visitor(mission.swarm)
+        env_elems = env_visitor(mission.environment)
+        objective_elems = objective_visitor(mission.objective)
+        
+        root = ET.Element("config")
+        swarm_elems_node = ET.Element("swarm-elems")
+        env_elems_node = ET.Element("env-elems")
+        objective_elems_node = ET.Element("objective-elems")
+        
+        [swarm_elems_node.append(n) for n in swarm_elems]
+        [env_elems_node.append(n) for n in env_elems]
+        [objective_elems_node.append(n) for n in objective_elems]
+        
+        root.append(swarm_elems_node)
+        root.append(env_elems_node)
+        root.append(objective_elems_node)
+        return root
+
     def generate_config(self, skeleton_root: ET.Element, mission: Mission) -> ET.Element:
         swarm_elems = swarm_visitor(mission.swarm)
         env_elems = env_visitor(mission.environment)
         objective_elems = objective_visitor(mission.objective)
 
+        root = deepcopy(skeleton_root)
+        replace_placeholder_mut(root, "loop-placeholder", objective_elems)
+        replace_placeholder_mut(root, "environment-placeholder", env_elems)
+        replace_placeholder_mut(root, "robots-placeholder", swarm_elems)
+
+        # merge arena-attrib to arena attrib
+        arena = get_element(root, "arena")
+        arena_attrib = get_element(root, "arena-attrib")
+
+        for key, value in arena_attrib.items():
+            arena.attrib[key] = value
+        arena.remove(arena_attrib)
+
+        return root
+    
+    def convert_config_params(self, params: ET.Element, skeleton_root: ET.Element) -> ET.Element:
+        swarm_elems = params.find("swarm-elems")
+        env_elems = params.find("env-elems")
+        objective_elems = params.find("objective-elems")
+        
+        
         root = deepcopy(skeleton_root)
         replace_placeholder_mut(root, "loop-placeholder", objective_elems)
         replace_placeholder_mut(root, "environment-placeholder", env_elems)

@@ -66,9 +66,10 @@ if __name__ == "__main__":
 
     elif args.output == "config":
         skeleton = ET.parse(args.template).getroot()
-        config = Configurator().generate_config(
-            skeleton, get_mission(params))
-        print(config_to_string(config))
+        # config = Configurator().generate_config(
+        #     skeleton, get_mission(params))
+        config = Configurator().generate_config_params(get_mission(params))
+        print(config_to_string(Configurator().convert_config_params(config, skeleton)))
         
     elif args.output == "write-mission":
         print(yaml.dump(missions.aggregation.get_mission()))
