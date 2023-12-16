@@ -38,31 +38,51 @@ def generate_square_of_walls(rect_length, rect_width):
     walls = [wall_1, wall_2, wall_3, wall_4]
     return walls
 
+def round_up(n, decimals=0):
+    multiplier = 10**decimals
+    return math.ceil(n * multiplier) / multiplier
 
-def generate_circular_walls(radius, num_walls, wall_size=(0.01, 0.5, 0.08)):
+def round_down(n, decimals=0):
+    multiplier = 10**decimals
+    return int(n * multiplier) / multiplier
+
+def generate_circular_walls(radius, num_walls):
     """
-    Generate a circular arrangement of walls with the specified radius and number of walls.
+    Generate an n-gon of walls with the specified radius and number of sides.
 
     Parameters:
-    - radius (float): The radius of the circle.
-    - num_walls (int): The number of walls in the circular arrangement.
+    - radius (float): The radius of the n-gon.
+    - num_sides (int): The number of sides of the n-gon.
 
     Returns:
-    - list: A list of Wall objects forming a circular arrangement.
+    - list: A list of Wall objects forming an n-gon.
     """
-    walls = []
     angle_increment = 360.0 / num_walls
+    side_length = 2 * radius * math.sin(math.radians(angle_increment / 2))
+    wall_size = (0.01, side_length, 0.1)  # width, length, height
 
+    # Create a list of walls forming an n-gon
+    walls = []
     for i in range(num_walls):
-        angle = math.radians(i * angle_increment)
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
+        start_angle = i * angle_increment
+        end_angle = (i + 1) * angle_increment
 
-        wall_pose = Pose((x, y, 0.0), (0.0, 0.0, math.degrees(angle)))
-        walls.append(Wall(size=wall_size, pose=wall_pose))
+        start_x = radius * math.cos(math.radians(start_angle))
+        start_y = radius * math.sin(math.radians(start_angle))
+
+        end_x = radius * math.cos(math.radians(end_angle))
+        end_y = radius * math.sin(math.radians(end_angle))
+
+        mid_x = (start_x + end_x) / 2
+        mid_y = (start_y + end_y) / 2
+
+        angle = math.atan2(mid_y, mid_x) * (180 / math.pi)
+
+        # Encode angle in the first dimension of Pose
+        wall = Wall(size=wall_size, pose=Pose((mid_x, mid_y, 0), (angle, 0, 0)))
+        walls.append(wall)
 
     return walls
-
 
 def truncate_floats(input_string):
     def truncate(match):

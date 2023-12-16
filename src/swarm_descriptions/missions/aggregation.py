@@ -32,7 +32,7 @@ def sample_params():
     max_wall_size = min(env_size[0] / 2, env_size[1] / 2, random.uniform(5.0, 15.0))
 
     # Randomly choose between circular and square walls
-    walls_type = 'circular' if random.random() < 0 else 'rectangular'
+    walls_type = 'circular' if random.random() < 1 else 'rectangular'
 
     # Sample wall parameters
     if walls_type == 'circular':
