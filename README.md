@@ -7,6 +7,9 @@ Hatch can be installed with `pipx install hatch`, assuming [pipx](https://github
 # Scripts
 Run scripts like `hatch run python scripts/generate_data.py -h`.
 
+config files can be run with automode with `/opt/argos/AutoMoDe/bin/automode_main_bt -c /tmp/test.argos --bt-config --nroot 3 --nchildroot 1 --n0 0 --nchild0 2 --n00 6 --c00 5 --p00 0.26 --n01 5 --a01 0 --rwm01 5 --p01 0
+` if installed at given path.
+
 # Related Work
  - Towards an integrated automatic design process for robot swarms](https://open-research-europe.ec.europa.eu/articles/1-112/v2) by Bozhinoski et. al.
 

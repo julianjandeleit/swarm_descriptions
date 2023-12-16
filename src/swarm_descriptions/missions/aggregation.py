@@ -18,27 +18,53 @@ class AggregationParams:
 
 
 def sample_params():
-    agg_radius = random.uniform(1.0, 2.0)
-    light_1 = (random.uniform(-5.0, 5.0), random.uniform(-5.0, 5.0), 0.0)
-    light_2 = (random.uniform(-5.0, 5.0), random.uniform(-5.0, 5.0), 0.0)
+    # Sample number of robots
     num_robots = random.randint(5, 15)
 
-    max_wall_size = max(random.uniform(5.0, 15.0), random.uniform(5.0, 15.0))
-
+    # Sample environment size
     env_size = (
-        max(2 * max_wall_size, random.uniform(5.0, 15.0)),
-        max(2 * max_wall_size, random.uniform(5.0, 15.0)),
+        random.uniform(5.0, 15.0),
+        random.uniform(5.0, 15.0),
         random.uniform(1.0, 3.0)
     )
 
-    # Randomly choose between circular and square walls
-    walls_type = 'circular' if random.random() < 0.5 else 'rectangular'
+    # Determine maximum wall size for arena based on the sampled environment size
+    max_wall_size = min(env_size[0] / 2, env_size[1] / 2, random.uniform(5.0, 15.0))
 
+    # Randomly choose between circular and square walls
+    walls_type = 'circular' if random.random() < 0 else 'rectangular'
+
+    # Sample wall parameters
     if walls_type == 'circular':
-        wall_params = {'radius': max_wall_size,
+        wall_params = {'radius': random.uniform(0.2, max_wall_size),
                        'num_walls': random.randint(4, 12)}
     else:
-        wall_params = {'length': max_wall_size, 'width': max_wall_size}
+        max_wall_length = min(env_size[0], max_wall_size)
+        max_wall_width = min(env_size[1], max_wall_size)
+        wall_params = {'rect_length': random.uniform(0.2, max_wall_length),
+                       'rect_width': random.uniform(0.2, max_wall_width)}
+
+    # Calculate available space within walls
+    available_space = (
+        env_size[0] - 2 * wall_params['radius'] if walls_type == 'circular' else env_size[0],
+        env_size[1] - 2 * wall_params['radius'] if walls_type == 'circular' else env_size[1],
+        env_size[2]
+    )
+
+    # Sample lights within the available space
+    light_1 = (
+        random.uniform(-available_space[0] / 2, available_space[0] / 2),
+        random.uniform(-available_space[1] / 2, available_space[1] / 2),
+        0.0
+    )
+    light_2 = (
+        random.uniform(-available_space[0] / 2, available_space[0] / 2),
+        random.uniform(-available_space[1] / 2, available_space[1] / 2),
+        0.0
+    )
+
+    # Sample aggregation radius within the constraint
+    agg_radius = random.uniform(0.5, min(available_space[0] / 4, available_space[1] / 4))
 
     return AggregationParams(
         agg_radius=agg_radius,

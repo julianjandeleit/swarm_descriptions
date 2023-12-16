@@ -8,7 +8,7 @@ import logging
 from copy import deepcopy
 from dataclasses import asdict
 
-def generate_square_of_walls(length, width):
+def generate_square_of_walls(rect_length, rect_width):
     """
     Generate a square of walls with the specified length and width.
 
@@ -19,16 +19,20 @@ def generate_square_of_walls(length, width):
     Returns:
     - list: A list of Wall objects forming a square.
     """
-    wall_size = (0.01, length, width)
+
+    wall_size_length = (0.01, rect_length, 0.1) # width, length, height
+    wall_size_width = (0.01, rect_width, 0.1) # width, length, height
 
     # Walls forming a square
-    wall_1 = Wall(size=wall_size, pose=Pose((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)))
-    wall_2 = Wall(size=wall_size, pose=Pose(
-        (length, 0.0, 0.0), (0.0, 0.0, 90.0)))
-    wall_3 = Wall(size=wall_size, pose=Pose(
-        (length, width, 0.0), (0.0, 0.0, 180.0)))
-    wall_4 = Wall(size=wall_size, pose=Pose(
-        (0.0, width, 0.0), (0.0, 0.0, -90.0)))
+    half_length = rect_length / 2
+    half_width = rect_width / 2
+
+    #wall_0 = Wall(size=(0.1,0.1,1.0), pose=Pose((0,0,0),(0,0,0))) # center
+    #logging.debug(wall_size)
+    wall_1 = Wall(size=wall_size_length, pose=Pose((0,-half_width, 0.0), (90.0, 0.0, 0.0))) # right
+    wall_2 = Wall(size=wall_size_width, pose=Pose((half_length, 0, 0.0), (0.0, 0.0, 0.0))) # top
+    wall_3 = Wall(size=wall_size_length, pose=Pose((0, half_width, 0), (90.0, 0.0, 0.0))) # left
+    wall_4 = Wall(size=wall_size_width, pose=Pose((-half_length, 0, 0), (0, 0.0, 0.0))) # bottom
 
     # Create a list of walls
     walls = [wall_1, wall_2, wall_3, wall_4]

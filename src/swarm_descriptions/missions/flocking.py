@@ -40,7 +40,8 @@ def sample_params():
         wall_params = {'radius': max_wall_size,
                        'num_walls': random.randint(4, 12)}
     else:
-        wall_params = {'length': max_wall_size, 'width': max_wall_size}
+        wall_params = {'rect_length': random.uniform(0.2, max_wall_size),
+                       'rect_width': random.uniform(0.2, max_wall_size)}
 
     return FlockingParams(
         flocking_density=flocking_density,

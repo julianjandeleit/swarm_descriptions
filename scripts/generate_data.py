@@ -10,6 +10,7 @@ from swarm_descriptions.configfiles import ET, Configurator, config_to_string
 from swarm_descriptions.utils import sample_describer_missions, save_mission_dataset
 import pandas as pd
 from dataclasses import asdict
+import random
 
 def arg_to_loglevel(choice):
     if choice == "critical":
@@ -34,9 +35,15 @@ if __name__ == "__main__":
     
     parser.add_argument("--N", type=int, default=None, help="number of rows to generate for dataset")
     parser.add_argument("--out", type=pathlib.Path, default=None, help="output path of generated dataset")
+    parser.add_argument("--seed", type=int, default=None, help="seed for random generator. No seed if empty.")
 
     args = parser.parse_args()
     logging.basicConfig(level=arg_to_loglevel(args.logging))
+    
+    if args.seed is not None:
+        logging.info(f"setting seed {args.seed}")
+        np.random.seed(args.seed)
+        random.seed(args.seed)
 
     dm_modules = [
         (missions.aggregation, descriptions.aggregation),
@@ -45,6 +52,9 @@ if __name__ == "__main__":
         (missions.distribution, descriptions.distribution),
         (missions.connection, descriptions.connection)
     ]
+    
+    dm_modules = [
+        (missions.aggregation, descriptions.aggregation),]
 
     describer, get_mission, params, labels = sample_describer_missions(dm_modules)
     logging.info(f"sampled {labels}")

@@ -46,7 +46,8 @@ def sample_params():
         wall_params = {'radius': max_wall_size,
                        'num_walls': random.randint(4, 12)}
     else:
-        wall_params = {'length': max_wall_size, 'width': max_wall_size}
+        wall_params = {'rect_length': random.uniform(0.2, max_wall_size),
+                       'rect_width': random.uniform(0.2, max_wall_size)}
 
     # Ensure that black and white areas fit inside the arena and walls
     black_radius = random.uniform(0.2, min(env_size[0] / 2, env_size[1] / 2, max_wall_size / 2))
