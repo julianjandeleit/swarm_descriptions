@@ -21,8 +21,6 @@ class ConnectionParams:
 
 def sample_params():
     # Sample lights and number of robots
-    light_1 = (random.uniform(-5.0, 5.0), random.uniform(-5.0, 5.0), 0.0)
-    light_2 = (random.uniform(-5.0, 5.0), random.uniform(-5.0, 5.0), 0.0)
     num_robots = random.randint(5, 15)
 
     # Determine maximum wall size for arena
@@ -35,20 +33,28 @@ def sample_params():
         random.uniform(1.0, 3.0)
     )
 
-    # Randomly choose between circular and square walls
-    walls_type = 'circular' if random.random() < 0.5 else 'rectangular'
 
-    # Sample wall parameters
-    if walls_type == 'circular':
-        wall_params = {'radius': max_wall_size,
-                       'num_walls': random.randint(4, 12)}
-    else:
-        wall_params = {'rect_length': random.uniform(0.2, max_wall_size),
-                       'rect_width': random.uniform(0.2, max_wall_size)}
+    # Generate wall parameters
+    walls_type, wall_params = utils.generate_wall_params(env_size)
+
+    # Calculate available space within walls
+    min_x, max_x, min_y, max_y, min_z, max_z = utils.calculate_available_space(env_size, walls_type, wall_params)
+
+    # Sample lights within the available space
+    light_1 = (
+        random.uniform(min_x, max_x),
+        random.uniform(min_y, max_y),
+        random.uniform(min_z, max_z)
+    )
+    light_2 = (
+        random.uniform(min_x, max_x),
+        random.uniform(min_y, max_y),
+        random.uniform(min_z, max_z)
+    )
         
     # Sample connection range within a reasonable range
     distr_conn_range = random.uniform(0.1, 0.5)
-
+    
 
     return ConnectionParams(
         conn_start="light_1",

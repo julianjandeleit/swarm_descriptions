@@ -46,7 +46,7 @@
         <!-- Please note that this light has an intensity equal to 0 -->
         <!-- and therefore does not affect the experiment. -->
         <!-- ARGoS requires at least one light when using the light sensor -->
-        <light id="light" position="0,-1.35,0.45" orientation="0,0,0" color="yellow" intensity="5.0" medium="leds"/>
+        <light id="light" position="0,-1.35,0.45" orientation="0,0,0" color="red" intensity="5.0" medium="leds"/>
 
         <environment-placeholder></environment-placeholder>
         <!-- ********** -->

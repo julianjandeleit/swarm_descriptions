@@ -1,8 +1,11 @@
 from swarm_descriptions.datamodel import *
 from swarm_descriptions import utils
 import random
-
+import math
+import logging
 from dataclasses import dataclass, field
+from swarm_descriptions.utils import generate_wall_params
+from swarm_descriptions.utils import calculate_available_space
 
 
 @dataclass
@@ -11,6 +14,8 @@ class AggregationParams:
     light_1: tuple[float, float, float] = (0.5, 0.2, 0.0)
     light_2: tuple[float, float, float] = (-0.5, 0.75, 0.0)
     num_robots: int = 10
+    robot_dist_min: tuple[float,float,float] = (-1.0,-1.0,0.0)
+    robot_dist_max: tuple[float,float,float] = (1.0,1.0,0.0)
     env_size: tuple[float, float, float] = (10.0, 10.0, 2.0)
     walls_type: str = 'circular'
     wall_params: dict = field(default_factory=lambda: {
@@ -28,54 +33,41 @@ def sample_params():
         random.uniform(1.0, 3.0)
     )
 
-    # Determine maximum wall size for arena based on the sampled environment size
-    max_wall_size = min(env_size[0] / 2, env_size[1] / 2, random.uniform(5.0, 15.0))
-
-    # Randomly choose between circular and square walls
-    walls_type = 'circular' if random.random() < 1 else 'rectangular'
-
-    # Sample wall parameters
-    if walls_type == 'circular':
-        wall_params = {'radius': random.uniform(0.2, max_wall_size),
-                       'num_walls': random.randint(4, 12)}
-    else:
-        max_wall_length = min(env_size[0], max_wall_size)
-        max_wall_width = min(env_size[1], max_wall_size)
-        wall_params = {'rect_length': random.uniform(0.2, max_wall_length),
-                       'rect_width': random.uniform(0.2, max_wall_width)}
+    # Generate wall parameters
+    walls_type, wall_params = generate_wall_params(env_size)
 
     # Calculate available space within walls
-    available_space = (
-        env_size[0] - 2 * wall_params['radius'] if walls_type == 'circular' else env_size[0],
-        env_size[1] - 2 * wall_params['radius'] if walls_type == 'circular' else env_size[1],
-        env_size[2]
-    )
+    min_x, max_x, min_y, max_y, min_z, max_z = calculate_available_space(env_size, walls_type, wall_params)
 
     # Sample lights within the available space
     light_1 = (
-        random.uniform(-available_space[0] / 2, available_space[0] / 2),
-        random.uniform(-available_space[1] / 2, available_space[1] / 2),
-        0.0
+        random.uniform(min_x, max_x),
+        random.uniform(min_y, max_y),
+        random.uniform(min_z, max_z)
     )
     light_2 = (
-        random.uniform(-available_space[0] / 2, available_space[0] / 2),
-        random.uniform(-available_space[1] / 2, available_space[1] / 2),
-        0.0
+        random.uniform(min_x, max_x),
+        random.uniform(min_y, max_y),
+        random.uniform(min_z, max_z)
     )
+    
+    logging.debug(f"available space {min_x, max_x}, {min_y, max_y}, {min_z, max_z}")
+    logging.debug(f"lights {light_1}, {light_2}")
 
     # Sample aggregation radius within the constraint
-    agg_radius = random.uniform(0.5, min(available_space[0] / 4, available_space[1] / 4))
+    agg_radius = random.uniform(0.5, min((max_x - min_x) / 4, (max_y - min_y) / 4))
 
     return AggregationParams(
         agg_radius=agg_radius,
         light_1=light_1,
         light_2=light_2,
         num_robots=num_robots,
+        robot_dist_min=(min_x, min_y, 0.0),
+        robot_dist_max=(max_x, max_y, 0.0),
         env_size=env_size,
         walls_type=walls_type,
         wall_params=wall_params
     )
-
 
 def get_mission(params: AggregationParams = AggregationParams()):
     epuck = Robot(sensors={}, actuators={})
@@ -96,11 +88,13 @@ def get_mission(params: AggregationParams = AggregationParams()):
     env = Environment(size=params.env_size, walls=walls, lights={
                       "light_1": light_1, "light_2": light_2})
 
+
+    logging.debug(f"{params.robot_dist_min} {params.robot_dist_max},{params.robot_dist_min}, {params.robot_dist_max}")
     swarm = Swarm(
         elements={"epuck":  (epuck, params.num_robots)},
         heading_distribution=Distribution.get_gaussian(
             mean="0,0,0", stdev="360,0,0"),
-        pos_distribution=Distribution.get_uniform(min="-1,-1,0", max="1,1,0"))
+        pos_distribution=Distribution.get_uniform(min=f"{params.robot_dist_min[0]},{params.robot_dist_min[1]},{params.robot_dist_min[2]}", max=f"{params.robot_dist_max[0]},{params.robot_dist_max[1]},{params.robot_dist_max[2]}"))
 
     objective = ObjAggregation(params.agg_radius, "light_1")
     # objective = ObjFlocking(density=2.5, velocity=0.2)

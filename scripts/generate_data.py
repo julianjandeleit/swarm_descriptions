@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Print generated data')
 
     parser.add_argument('output',
-                        help='"description", "config", "write-mission", "read-mission", "dataset"')
+                        help='"description", "config", "config-params", "write-mission", "read-mission", "dataset"')
     parser.add_argument(
         "--logging", choices=["critical", "info", "debug"], default="info")
     parser.add_argument("--template", type=pathlib.Path, help="path to template argos file",
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     ]
     
     dm_modules = [
-        (missions.aggregation, descriptions.aggregation),]
+        (missions.connection, descriptions.connection),]
 
     describer, get_mission, params, labels = sample_describer_missions(dm_modules)
     logging.info(f"sampled {labels}")
@@ -70,6 +70,13 @@ if __name__ == "__main__":
         #     skeleton, get_mission(params))
         config = Configurator().generate_config_params(get_mission(params))
         print(config_to_string(Configurator().convert_config_params(config, skeleton)))
+        
+    elif args.output == "config-params":
+        skeleton = ET.parse(args.template).getroot()
+        # config = Configurator().generate_config(
+        #     skeleton, get_mission(params))
+        config = Configurator().generate_config_params(get_mission(params))
+        print(config_to_string(config))
         
     elif args.output == "write-mission":
         print(yaml.dump(missions.aggregation.get_mission()))

@@ -102,6 +102,43 @@ def truncate_floats(input_string):
 
     return result_string
 
+def calculate_available_space(env_size, walls_type, wall_params):
+    if walls_type == 'circular':
+        radius = wall_params['radius']
+        # Calculate the largest rectangle that fits inside the circle
+        side_length = math.sqrt(2) * radius
+        min_x = -side_length / 2.0
+        max_x = side_length / 2.0
+        min_y = -side_length / 2.0
+        max_y = side_length / 2.0
+    else:
+        length = wall_params['rect_length']
+        width = wall_params['rect_width']
+        min_x = -length / 2.0
+        max_x = length / 2.0
+        min_y = -width / 2.0
+        max_y = width / 2.0
+
+    min_z = 0
+    max_z = env_size[2] / 2.0  # other half goes downwards but we do not want to place anything there
+
+    return min_x, max_x, min_y, max_y, min_z, max_z
+
+def generate_wall_params(env_size):
+    walls_type = 'circular' if random.random() < 0.5 else 'rectangular'
+
+    if walls_type == 'circular':
+        radius = random.uniform(0.2, min(env_size[0] / 2, env_size[1] / 2, 15.0))
+        num_walls = random.randint(4, 12)
+        wall_params = {'radius': radius, 'num_walls': num_walls}
+    else:
+        max_wall_length = min(env_size[0], random.uniform(5.0, 15.0))
+        max_wall_width = min(env_size[1], random.uniform(5.0, 15.0))
+        rect_length = random.uniform(0.2, max_wall_length)
+        rect_width = random.uniform(0.2, max_wall_width)
+        wall_params = {'rect_length': rect_length, 'rect_width': rect_width}
+
+    return walls_type, wall_params
 
 def sample_describer_missions(dm_modules: list):
     """Get describer and mission params from list of describer-mission modules.
