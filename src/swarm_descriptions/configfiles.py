@@ -74,10 +74,10 @@ def build_orientation(distr_builder):
     return ET.Element("orientation", attrib=distr_builder())
 
 
-def build_light(id: str,  position: str, orientation: str) -> ET.Element:
+def build_light(id: str,  position: str, orientation: str, intensity: str) -> ET.Element:
     position = t2s(position)
     orientation = t2s(orientation)
-    return ET.Element("light", attrib={"id": id, "position": position, "orientation": orientation, "color": "yellow", "intensity": "5.0", "medium": "leds"})
+    return ET.Element("light", attrib={"id": id, "position": position, "orientation": orientation, "color": "yellow", "intensity": intensity, "medium": "leds"})
 
 
 def build_wall(id: str, size: str, position: str, orientation: str) -> ET.Element:
@@ -145,7 +145,7 @@ def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
 def env_visitor(env: Environment) -> list[ET.Element]:
     elems = []
     for id, light in env.lights.items():
-        elems.append(build_light(id, light.pose.position, light.pose.heading))
+        elems.append(build_light(id, light.pose.position, light.pose.heading, str(light.intensity)))
 
     for id, wall in env.walls.items():
         elems.append(build_wall(

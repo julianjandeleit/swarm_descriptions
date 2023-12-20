@@ -49,6 +49,7 @@ class Wall:
 @dataclass
 class Light:
     pose: Pose
+    intensity: float = 5.0
 
 @dataclass
 class Environment:

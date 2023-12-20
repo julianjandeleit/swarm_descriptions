@@ -47,14 +47,14 @@ if __name__ == "__main__":
 
     dm_modules = [
         (missions.aggregation, descriptions.aggregation),
-        (missions.flocking, descriptions.flocking),
-        (missions.foraging, descriptions.foraging),
-        (missions.distribution, descriptions.distribution),
-        (missions.connection, descriptions.connection)
+        # (missions.flocking, descriptions.flocking),
+        # (missions.foraging, descriptions.foraging),
+        # (missions.distribution, descriptions.distribution),
+        # (missions.connection, descriptions.connection)
     ]
     
-    dm_modules = [
-        (missions.connection, descriptions.connection),]
+    # dm_modules = [
+    #     (missions.aggregation, descriptions.aggregation),]
 
     describer, get_mission, params, labels = sample_describer_missions(dm_modules)
     logging.info(f"sampled {labels}")

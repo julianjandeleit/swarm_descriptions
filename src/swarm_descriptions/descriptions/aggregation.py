@@ -13,7 +13,7 @@ def describer_1(params: AggregationParams):
         desc += f"Inside of the environment are walls in a rectangular shape. The walls form a rectangle of size {params.wall_params['length']} by {params.wall_params['width']}. "
     elif params.walls_type == "circular":
         desc += f"Inside of the environment are walls in a circular shape. The walls form a circle with radius {params.wall_params['radius']} made out of {params.wall_params['num_walls']} walls. "
-    desc += f" Additionally, there are two lights inside of the environment. light_1 is placed at {params.light_1}. The second light is placed at {(params.light_2)}. The swarm consists of {params.num_robots} robots. The objective of this aggregation mission is to meet within a range of {params.agg_radius} of the first light."
+    desc += f" Additionally, there are two lights inside of the environment. light_1 is placed at {params.light_1[:3]}. The second light is placed at {(params.light_2[:3])}. The intensity of light_1 is {'higher' if params.light_1[3] > params.light_2[3] else 'lower'} than light_2. The swarm consists of {params.num_robots} robots. The objective of this aggregation mission is to meet within a range of {params.agg_radius} of the first light."
     return utils.truncate_floats(desc)
 
 
@@ -23,7 +23,7 @@ def describer_2(params: AggregationParams):
         desc += f"The environment is enclosed by rectangular walls measuring {params.wall_params['length']} by {params.wall_params['width']}. "
     elif params.walls_type == "circular":
         desc += f"The environment is surrounded by a circular wall with a radius of {params.wall_params['radius']}. The wall is composed of {params.wall_params['num_walls']} segments. "
-    desc += f"There are two lights within the environment. Light_1 is positioned at {params.light_1}, and Light_2 is located at {params.light_2}. The swarm comprises {params.num_robots} robots. The mission objective is aggregation, with the goal of gathering within a range of {params.agg_radius} of Light_1."
+    desc += f"There are two lights within the environment. Light_1 is positioned at {params.light_1[:3]} and has intensity {params.light_1[3]}, and Light_2 is located at {params.light_2[:3]} with intensity {params.light_2[3]}. The swarm comprises {params.num_robots} robots. The mission objective is aggregation, with the goal of gathering within a range of {params.agg_radius} of the light with the {'higher' if params.light_1[3] > params.light_2[3] else 'lower'} intensity."
     return utils.truncate_floats(desc)
 
 
@@ -33,5 +33,5 @@ def describer_3(params: AggregationParams):
         desc += f"The boundaries of this space are defined by rectangular walls, creating an enclosure measuring {params.wall_params['length']} by {params.wall_params['width']}. "
     elif params.walls_type == "circular":
         desc += f"Enveloping the area is a circular wall, meticulously crafted with a radius of {params.wall_params['radius']} and composed of {params.wall_params['num_walls']} segments. "
-    desc += f"Within this setting, two lights illuminate the surroundings: Light_1 at {params.light_1} and Light_2 at {params.light_2}. The mission unfolds with the objective of aggregating within a range of {params.agg_radius} around Light_1."
+    desc += f"Within this setting, two lights illuminate the surroundings: Light_1 at {params.light_1[:3]} and Light_2 at {params.light_2[:3]}. The first light shines {'brighter' if params.light_1[3] > params.light_2[3] else 'dimmer'} than the second light.  The mission unfolds with the objective of aggregating within a range of {params.agg_radius} around Light_1."
     return utils.truncate_floats(desc)

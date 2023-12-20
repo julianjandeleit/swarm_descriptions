@@ -10,8 +10,8 @@ class ConnectionParams:
     conn_start: str = "light_1"
     conn_end: str = "light_2"
     conn_range: float = 0.2
-    light_1: tuple[float, float, float] = (0.5, 0.2, 0.0)
-    light_2: tuple[float, float, float] = (-0.5, 0.75, 0.0)
+    light_1: tuple[float, float, float, float] = (0.5, 0.2, 0.0, 0.5)
+    light_2: tuple[float, float, float, float] = (-0.5, 0.75, 0.0, 0.5)
     num_robots: int = 10
     env_size: tuple[float, float, float] = (10.0, 10.0, 2.0)
     walls_type: str = 'circular'
@@ -44,12 +44,14 @@ def sample_params():
     light_1 = (
         random.uniform(min_x, max_x),
         random.uniform(min_y, max_y),
-        random.uniform(min_z, max_z)
+        random.uniform(min_z, max_z),
+        random.uniform(2.0, 8.0)
     )
     light_2 = (
         random.uniform(min_x, max_x),
         random.uniform(min_y, max_y),
-        random.uniform(min_z, max_z)
+        random.uniform(min_z, max_z),
+        random.uniform(2.0, 8.0)
     )
         
     # Sample connection range within a reasonable range

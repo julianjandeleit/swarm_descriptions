@@ -11,8 +11,8 @@ from swarm_descriptions.utils import calculate_available_space
 @dataclass
 class AggregationParams:
     agg_radius: float = 1.2
-    light_1: tuple[float, float, float] = (0.5, 0.2, 0.0)
-    light_2: tuple[float, float, float] = (-0.5, 0.75, 0.0)
+    light_1: tuple[float, float, float] = (0.5, 0.2, 0.0, 5.0)
+    light_2: tuple[float, float, float] = (-0.5, 0.75, 2.0)
     num_robots: int = 10
     robot_dist_min: tuple[float,float,float] = (-1.0,-1.0,0.0)
     robot_dist_max: tuple[float,float,float] = (1.0,1.0,0.0)
@@ -43,12 +43,14 @@ def sample_params():
     light_1 = (
         random.uniform(min_x, max_x),
         random.uniform(min_y, max_y),
-        random.uniform(min_z, max_z)
+        random.uniform(min_z, max_z),
+        random.uniform(2.0, 8.0)
     )
     light_2 = (
         random.uniform(min_x, max_x),
         random.uniform(min_y, max_y),
-        random.uniform(min_z, max_z)
+        random.uniform(min_z, max_z),
+        random.uniform(2.0, 8.0)
     )
     
     logging.debug(f"available space {min_x, max_x}, {min_y, max_y}, {min_z, max_z}")
@@ -82,8 +84,8 @@ def get_mission(params: AggregationParams = AggregationParams()):
         walls = {f"wall_{i}": w for i, w in enumerate(
             utils.generate_square_of_walls(**params.wall_params))}
 
-    light_1 = Light(Pose(params.light_1, (360, 0, 0)))
-    light_2 = Light(Pose(params.light_2, (360, 0, 0)))
+    light_1 = Light(Pose(params.light_1[:3], (360, 0, 0)), params.light_1[3])
+    light_2 = Light(Pose(params.light_2[:3], (360, 0, 0)), params.light_2[3])
 
     env = Environment(size=params.env_size, walls=walls, lights={
                       "light_1": light_1, "light_2": light_2})
