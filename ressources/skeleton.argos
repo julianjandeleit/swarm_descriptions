@@ -10,7 +10,7 @@
     <!-- ****************** -->
     <!-- * Loop functions * -->
     <!-- ****************** -->
-    <loop_functions library="/opt/argos/AutoMoDe-loopfunctions/build/loop-functions/custom/libcustom_loopfunc.so" label="template">
+    <loop_functions library="/opt/argos/AutoMoDe-loopfunctions/build/loop-functions/custom-loopfunctions/libcustom_loopfunc.so" label="template">
         <loop-placeholder></loop-placeholder>
     </loop_functions>
 

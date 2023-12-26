@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
+from enum import Enum
 
 @dataclass
 class Sensor:
@@ -36,6 +37,8 @@ class Distribution:
         """ e.g. mean="0,0,0", stdev=""360,0,0"" """
         return Distribution(method="gaussian",method_params={"mean": mean, "std_dev": stdev})
 
+
+
 @dataclass
 class Robot:
     sensors: dict[str,Sensor]
@@ -50,12 +53,23 @@ class Wall:
 class Light:
     pose: Pose
     intensity: float = 5.0
+   
+
+class GroundColor(Enum):
+    BLACK = 1
+    WHITE = 2
+    
+@dataclass
+class Ground:
+    position: tuple[float, float, float]
+    radius: float
+    color: GroundColor
 
 @dataclass
 class Environment:
     size: tuple[float,float,float]
     lights: dict[str, Light]
-    walls: dict[str, Wall] 
+    walls: dict[str, Wall]
 
 @dataclass
 class Swarm:
@@ -66,22 +80,25 @@ class Swarm:
 @dataclass
 class ObjectiveFunction:
     type: str
+    grounds: dict[str, Ground] 
     
 class ObjAggregation(ObjectiveFunction):
 
-    def __init__(self,radius: float, light_id: str):
-        self.type = "aggregation"
+    def __init__(self,radius: float, target_color: str, **kwds):
+        super().__init__("aggregation,",**kwds)
         self.radius = radius
-        self.light = light_id
+        self.target = target_color
     
 class ObjFlocking(ObjectiveFunction):
-    def __init__(self, density: float, velocity: float):
+    def __init__(self, density: float, velocity: float, **kwds):
+        super().__init__(**kwds)
         self.type = "flocking"
         self.density = density
         self.velocity = velocity
     
 class ObjForaging(ObjectiveFunction):
-    def __init__(self, black_pos: (float,float,float), black_r: float, white_pos: (float,float,float), white_r: float):
+    def __init__(self, black_pos: (float,float,float), black_r: float, white_pos: (float,float,float), white_r: float, **kwds):
+        super().__init__(**kwds)
         self.type = "foraging"
         self.black_position = black_pos
         self.black_radius = black_r
@@ -90,13 +107,15 @@ class ObjForaging(ObjectiveFunction):
     
 class ObjDistribution(ObjectiveFunction):
     
-    def __init__(self, area: tuple[float,float], max_connection_distance: float):
+    def __init__(self, area: tuple[float,float], max_connection_distance: float, **kwds):
+        super().__init__(**kwds)
         self.type = "distribution"
         self.area = area
         self.max_connection_dist = max_connection_distance
     
 class ObjConnection(ObjectiveFunction):
-    def __init__(self, light1_id: str, light2_id: str, connection_range: float):
+    def __init__(self, light1_id: str, light2_id: str, connection_range: float, **kwds):
+        super().__init__(**kwds)
         self.type = "connection"
         self.light1 = light1_id
         self.light2 = light2_id

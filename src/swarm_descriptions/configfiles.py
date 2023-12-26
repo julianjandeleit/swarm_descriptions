@@ -79,6 +79,12 @@ def build_light(id: str,  position: str, orientation: str, intensity: str) -> ET
     orientation = t2s(orientation)
     return ET.Element("light", attrib={"id": id, "position": position, "orientation": orientation, "color": "yellow", "intensity": intensity, "medium": "leds"})
 
+def build_ground_area(position: str, radius: str, color: GroundColor) -> ET.Element:
+    position = t2s(position)
+    radius = t2s(radius)
+    color = color.name.lower()
+    return ET.Element("circle", attrib={"position": position, "radius": radius, "color": color})
+    
 
 def build_wall(id: str, size: str, position: str, orientation: str) -> ET.Element:
     size = t2s(size)
@@ -100,18 +106,20 @@ def build_size(size: tuple[float, float, float]) -> ET.Element:
 def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
     loop_data = """<T>
             <params dist_radius="1.2" number_robots="20"/>
-            <circle position="0,0.6" radius="0.3" color="white"/>
-            <circle position="0,-0.6" radius="0.3" color="black"/>
             <spawnCircle position="0,0" radius="1.227894"/>
     </T>"""
     loop = ET.fromstring(loop_data)
     loop = list(loop)
 
     el_obj = ET.Element("objective", attrib={"type": obj.type})
+    
+            
+    for id, area in obj.grounds.items():
+        loop.append(build_ground_area(position=area.position, radius=area.radius, color=area.color))
 
     if isinstance(obj, ObjAggregation):
         op = ET.Element("objective-params",
-                        attrib={"light": obj.light, "radius": str(obj.radius)})
+                        attrib={"target-color": obj.target, "radius": str(obj.radius)})
         el_obj.append(op)
 
     if isinstance(obj, ObjFlocking):
