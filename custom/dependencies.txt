@@ -1,0 +1,1 @@
+sudo dnf install freeimage-devel qt5-qtbase-devel freeglut-devel libXi-devel libXmu-devel lua-devel doxygen graphviz graphviz-devel asciidoc
