@@ -104,9 +104,8 @@ def build_size(size: tuple[float, float, float]) -> ET.Element:
 
 
 def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
-    loop_data = """<T>
-            <params dist_radius="1.2" number_robots="20"/>
-            <spawnCircle position="0,0" radius="1.227894"/>
+    loop_data = f"""<T>
+            <spawnCircle position="0,0" radius="{t2s(obj.spawn_radius)}"/>
     </T>"""
     loop = ET.fromstring(loop_data)
     loop = list(loop)
@@ -166,10 +165,10 @@ def env_visitor(env: Environment) -> list[ET.Element]:
 def swarm_visitor(swarm: Swarm) -> list[ET.Element]:
     elems = []
 
-    elems.append(build_position(lambda: general_builder(
-        swarm.pos_distribution.method, **swarm.pos_distribution.method_params)))
-    elems.append(build_orientation(lambda: general_builder(
-        swarm.heading_distribution.method, **swarm.heading_distribution.method_params)))
+    # elems.append(build_position(lambda: general_builder(
+    #     swarm.pos_distribution.method, **swarm.pos_distribution.method_params)))
+    # elems.append(build_orientation(lambda: general_builder(
+    #     swarm.heading_distribution.method, **swarm.heading_distribution.method_params)))
 
     for id, (rob, num) in swarm.elements.items():
         elems.append(build_entity(id, num))

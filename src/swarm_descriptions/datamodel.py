@@ -74,12 +74,11 @@ class Environment:
 @dataclass
 class Swarm:
     elements: dict[str,(Robot, int)] # maps robot type(id) to list of robots of that type
-    pos_distribution: Distribution
-    heading_distribution: Distribution
 
 @dataclass
 class ObjectiveFunction:
     type: str
+    spawn_radius: float
     grounds: dict[str, Ground] 
     
 class ObjAggregation(ObjectiveFunction):

@@ -49,15 +49,6 @@ def sample_params():
     logging.debug(f"available space {min_x, max_x}, {min_y, max_y}, {min_z, max_z}")
     
     return AggregationParams(agg_target=agg_target, ground_area_1= ground_area_1, ground_area_2=ground_area_2, env_size=env_size, num_lights=num_lights, num_robots=num_robots, wall_params=wall_params, walls_type=walls_type)
-    
-def temp():
-
-    # Calculate available space within walls
-    min_x, max_x, min_y, max_y, min_z, max_z = calculate_available_space(env_size, walls_type, wall_params)
-
-    # Sample lights within the available space
-    num_lights = random.randint(0,5)
-
 
 def get_mission(params: AggregationParams = AggregationParams()):
     
@@ -93,15 +84,12 @@ def get_mission(params: AggregationParams = AggregationParams()):
     # -- Swarm --
     epuck = Robot(sensors={}, actuators={})
     swarm = Swarm(
-        elements={"epuck":  (epuck, params.num_robots)},
-        heading_distribution=Distribution.get_gaussian(
-            mean="0,0,0", stdev="360,0,0"),
-        pos_distribution=Distribution.get_uniform(min=f"{min_x},{min_y},0", max=f"{max_x},{max_y},0"))
+        elements={"epuck":  (epuck, params.num_robots)})
 
     # -- Objective --
     oc = params.ground_area_1 if params.agg_target == 2 else params.ground_area_2
     grounds = {"ground_1": Ground(params.ground_area_1[0], params.ground_area_1[1], GroundColor[params.ground_area_1[2].upper()]), "ground_2": Ground(params.ground_area_2[0], params.ground_area_2[1], GroundColor[params.ground_area_2[2].upper()])}
-    objective = ObjAggregation(radius=oc[1],target_color=oc[2], grounds=grounds)
+    objective = ObjAggregation(radius=oc[1],target_color=oc[2], grounds=grounds, spawn_radius=min(max_x-min_x, max_y-min_y)/2.0) # width of robot
     # objective = ObjFlocking(density=2.5, velocity=0.2)
     # objective = ObjForaging((0.25,0.25), 0.2, (0.1,0.1), 0.4)
     # objective = ObjDistribution((2.5,7.5), max_connection_distance=0.3)
