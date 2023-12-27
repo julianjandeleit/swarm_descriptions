@@ -87,6 +87,14 @@ class ObjAggregation(ObjectiveFunction):
         super().__init__("aggregation,",**kwds)
         self.radius = radius
         self.target = target_color
+        
+class ObjConnection(ObjectiveFunction):
+    def __init__(self, conn_start: str, conn_end: str, connection_range: float, **kwds):
+        super().__init__("connection", **kwds)
+        self.conn_start = conn_start
+        self.conn_end = conn_end
+        self.connection_range = connection_range
+        
     
 class ObjFlocking(ObjectiveFunction):
     def __init__(self, density: float, velocity: float, **kwds):
@@ -94,15 +102,6 @@ class ObjFlocking(ObjectiveFunction):
         self.type = "flocking"
         self.density = density
         self.velocity = velocity
-    
-class ObjForaging(ObjectiveFunction):
-    def __init__(self, black_pos: (float,float,float), black_r: float, white_pos: (float,float,float), white_r: float, **kwds):
-        super().__init__(**kwds)
-        self.type = "foraging"
-        self.black_position = black_pos
-        self.black_radius = black_r
-        self.white_position = white_pos
-        self.white_radius = white_r
     
 class ObjDistribution(ObjectiveFunction):
     
@@ -112,14 +111,6 @@ class ObjDistribution(ObjectiveFunction):
         self.area = area
         self.max_connection_dist = max_connection_distance
     
-class ObjConnection(ObjectiveFunction):
-    def __init__(self, light1_id: str, light2_id: str, connection_range: float, **kwds):
-        super().__init__(**kwds)
-        self.type = "connection"
-        self.light1 = light1_id
-        self.light2 = light2_id
-        self.connection_range = connection_range
-        
 
 @dataclass
 class Mission:

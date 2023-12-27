@@ -197,3 +197,94 @@ def load_mission_dataset(path):
     df.params = df[["params", "params_type"]].apply(instantiate_dict,axis=1)
     
     return df
+
+
+
+from dataclasses import dataclass, field
+import random
+from swarm_descriptions.utils import generate_wall_params
+
+@dataclass
+class AvailableSpace:
+    min_x: float
+    max_x: float
+    min_y: float
+    max_y: float
+    min_z: float
+    max_z: float
+    
+    def radius(self):
+        avs = self
+        return min(avs.max_x-avs.min_x, avs.max_y-avs.min_y)/2.0
+
+@dataclass
+class BaseParams:
+    num_robots: int = 10
+    num_lights: int = 10
+    env_size: tuple[float, float, float] = (10.0, 10.0, 2.0)
+    walls_type: str = 'circular'
+    wall_params: dict = field(default_factory=lambda: {
+                              'radius': 2.0, 'num_walls': 8})
+    
+    def sample():
+        # Sample number of elements
+        num_robots = random.randint(5, 15)
+        num_lights = random.randint(0, 3)
+
+        # Sample environment and walls
+        env_size = (
+            random.uniform(5.0, 15.0),
+            random.uniform(5.0, 15.0),
+            random.uniform(1.0, 3.0)
+        )
+
+        walls_type, wall_params = generate_wall_params(env_size)
+
+        return BaseParams(num_robots, num_lights, env_size, walls_type, wall_params)
+    
+    def available_space(self):
+        min_x, max_x, min_y, max_y, min_z, max_z = calculate_available_space(self.env_size, self.walls_type, self.wall_params)
+        logging.debug(f"available space: {(min_x, max_x, min_y, max_y, min_z, max_z)}")
+        return AvailableSpace(min_x, max_x, min_y, max_y, min_z, max_z)
+    
+@dataclass
+class BaseMission:
+    swarm: Swarm
+    env: Environment
+    
+    def instantiate(params: BaseParams):
+        # -- Environment --
+        # -- walls
+        if params.wall_params is None:
+            params.wall_params = {}
+
+        if params.walls_type == 'circular':
+            walls = {f"wall_{i}": w for i, w in enumerate(
+                generate_circular_walls(**params.wall_params))}
+        else:
+            walls = {f"wall_{i}": w for i, w in enumerate(
+                generate_square_of_walls(**params.wall_params))}
+            
+            
+        # -- lights
+        min_x, max_x, min_y, max_y, min_z, max_z = calculate_available_space(params.env_size, params.walls_type, params.wall_params)
+        lights = [(
+            random.uniform(min_x, max_x),
+            random.uniform(min_y, max_y),
+            0.00,
+            random.uniform(2.0, 8.0)
+        ) for n in range(params.num_lights)]
+        lights = [Light(Pose(light[:3], (360, 0, 0)), light[3]) for light in lights]
+
+
+        env = Environment(size=params.env_size, walls=walls, lights={
+                            f"light_{i}": light for i, light in enumerate(lights)})
+
+
+
+        # -- Swarm --
+        epuck = Robot(sensors={}, actuators={})
+        swarm = Swarm(
+            elements={"epuck":  (epuck, params.num_robots)})
+        
+        return BaseMission(swarm, env)

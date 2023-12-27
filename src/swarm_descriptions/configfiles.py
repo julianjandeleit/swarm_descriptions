@@ -116,23 +116,12 @@ def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
     for id, area in obj.grounds.items():
         loop.append(build_ground_area(position=area.position, radius=area.radius, color=area.color))
 
+
     if isinstance(obj, ObjAggregation):
         op = ET.Element("objective-params",
                         attrib={"target-color": obj.target, "radius": str(obj.radius)})
         el_obj.append(op)
 
-    if isinstance(obj, ObjFlocking):
-        op = ET.Element(
-            "objective-params", attrib={"density": str(obj.density), "velocity": str(obj.velocity)})
-        el_obj.append(op)
-
-    if isinstance(obj, ObjForaging):
-        op = ET.Element("objective-params")
-        op.append(ET.Element("circle", attrib={"position": t2s(
-            obj.black_position), "radius": str(obj.black_radius), "color": "black"}))
-        op.append(ET.Element("circle", attrib={"position": t2s(
-            obj.white_position), "radius": str(obj.white_radius), "color": "white"}))
-        el_obj.append(op)
 
     if isinstance(obj, ObjDistribution):
         op = ET.Element("objective-params", attrib={"area": t2s(
@@ -140,8 +129,8 @@ def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
         el_obj.append(op)
 
     if isinstance(obj, ObjConnection):
-        op = ET.Element("objective-params", attrib={"light1": obj.light1,
-                        "light2": obj.light2, "connection_range": t2s(obj.connection_range)})
+        op = ET.Element("objective-params", attrib={"conn_start": str(obj.conn_start),
+                        "conn_end": str(obj.conn_end), "connection_range": t2s(obj.connection_range)})
         el_obj.append(op)
 
     loop.append(el_obj)

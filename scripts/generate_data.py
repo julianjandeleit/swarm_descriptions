@@ -46,11 +46,10 @@ if __name__ == "__main__":
         random.seed(args.seed)
 
     dm_modules = [
-        (missions.aggregation, descriptions.aggregation),
-        # (missions.flocking, descriptions.flocking),
+        # (missions.aggregation, descriptions.aggregation),
         # (missions.foraging, descriptions.foraging),
         # (missions.distribution, descriptions.distribution),
-        # (missions.connection, descriptions.connection)
+        (missions.connection, descriptions.connection)
     ]
     
     # dm_modules = [
