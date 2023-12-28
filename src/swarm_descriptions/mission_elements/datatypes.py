@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Self, Tuple, Generic, TypeVar, List, Dict, Optional
+from typing import Tuple, Generic, TypeVar, List, Dict, Optional
+from typing_extensions import Self
 from swarm_descriptions.datamodel import GroundColor, Light, ObjectiveFunction, RobotSwarm, Wall
 
 # helper classes
