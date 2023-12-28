@@ -1,5 +1,6 @@
 import random
-from typing import List, Self
+from typing import List
+from typing_extensions import Self
 from swarm_descriptions.datamodel import ObjAggregation, ObjectiveFunction, ObjConnection, ObjDistribution, ObjForaging
 from swarm_descriptions.mission_elements.datatypes import Objective, Ground, GroundColor
 from swarm_descriptions.datamodel import Ground as DMGround
@@ -18,20 +19,17 @@ class Aggregation(Objective):
     def describe(self) -> List[str]:
         agg_target = GroundColor(self.agg_target).name.lower()
         return [
-                    f"There is a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The objective is for the robots to aggregate at the {agg_target} circle. ",
-                    f"The goal is for the robots to aggregate at the {agg_target} circle. There are two areas on the floor: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. ",
-                    f"The primary goal for the robots is to cluster at the {agg_target} circle. There are two designated areas on the floor: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. ",
-                    f"The robots' task is to aggregate at the {agg_target} circle. There are two floor areas, each defined by a circle. The first circle, located at {self.ground_area_1.pos}, has a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}. The second circle, positioned at {self.ground_area_2.pos}, has a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. ",
-                    f"The robots' goal is to meet at the {agg_target} circle. In the arena, you'll find two areas: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters. ",
-                    f"The objective is for the robots to aggregate at the {agg_target} circle. There are two designated areas on the floor: a circle at {self.ground_area_1.pos} in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} in {self.ground_area_2.color.name.lower()}. ",
-                    f"In the floor space, you'll discover two distinct areas: a circle at {self.ground_area_1.pos} in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} in {self.ground_area_2.color.name.lower()}. The primary objective for the robots is to aggregate at the {agg_target} circle. ",
-                    f"The primary goal for the robots is to aggregate at the {agg_target} circle. There are two floor areas, each defined by a circle. The first circle has a radius of {self.ground_area_1.radius} meters and the color {self.ground_area_1.color.name.lower()}. The second circle has a radius of {self.ground_area_2.radius} meters and is {self.ground_area_2.color.name.lower()}. ",
-                    f"In the arena, you'll find two areas: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The robots' goal is to group together at the {agg_target} circle. ",
-                    f"The objective is for the robots to aggregate at the {agg_target} circle. There are two designated areas on the floor: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. "
-                ]
-
-
-            
+            f"There is a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The objective is for the robots to aggregate at the {agg_target} circle. ",
+            f"The goal is for the robots to aggregate at the {agg_target} circle. There are two areas on the floor: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. ",
+            f"The primary goal for the robots is to cluster at the {agg_target} circle. There are two designated areas on the floor: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. ",
+            f"The robots' task is to aggregate at the {agg_target} circle. There are two floor areas, each defined by a circle. The first circle, located at {self.ground_area_1.pos}, has a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}. The second circle, positioned at {self.ground_area_2.pos}, has a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. ",
+            f"The robots' goal is to meet at the {agg_target} circle. In the arena, you'll find two areas: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters. ",
+            f"The objective is for the robots to aggregate at the {agg_target} circle. There are two designated areas on the floor: a circle at {self.ground_area_1.pos} in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} in {self.ground_area_2.color.name.lower()}. ",
+            f"In the floor space, you'll discover two distinct areas: a circle at {self.ground_area_1.pos} in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} in {self.ground_area_2.color.name.lower()}. The primary objective for the robots is to aggregate at the {agg_target} circle. ",
+            f"The primary goal for the robots is to aggregate at the {agg_target} circle. There are two floor areas, each defined by a circle. The first circle has a radius of {self.ground_area_1.radius} meters and the color {self.ground_area_1.color.name.lower()}. The second circle has a radius of {self.ground_area_2.radius} meters and is {self.ground_area_2.color.name.lower()}. ",
+            f"In the arena, you'll find two areas: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The robots' goal is to group together at the {agg_target} circle. ",
+            f"The objective is for the robots to aggregate at the {agg_target} circle. There are two designated areas on the floor: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. "
+        ]
 
     @staticmethod
     def sample(availableSpace: AvailableSpace) -> Self:
@@ -57,7 +55,7 @@ class Connection(Objective):
     conn_range: float
     ground_area_1: Ground
     ground_area_2: Ground
-    
+
     def describe(self) -> List[str]:
         return [
             f"There is a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The objective for the robots is to form a line from the {self.conn_start} to the {self.conn_end} circle, so that they connect both circles. While forming a line, the robots should keep a distance of just under {self.conn_range} m. The robots with neighbors below this range count as connected. ",
@@ -71,30 +69,31 @@ class Connection(Objective):
             f"Imagine two circles on the floor—one centered at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters, in {self.ground_area_1.color.name.lower()}, and another at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The challenge for the robots is to connect both circles from {self.conn_start} to {self.conn_end}, keeping a distance just under {self.conn_range} m. ",
             f"There are two circles on the floor—one at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters, colored in {self.ground_area_1.color.name.lower()}, and another at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The objective for the robots is to connect both circles from {self.conn_start} to {self.conn_end}, maintaining a distance just under {self.conn_range} m. "
         ]
-    
+
     @staticmethod
     def sample(availableSpace: AvailableSpace) -> Self:
         t1, t2 = random.sample([1, 2], 2)
         g1, g2 = random.sample([1, 2], 2)
-        conn_range = random.uniform(0.05,0.5)
+        conn_range = random.uniform(0.05, 0.5)
         g1 = Ground([random.uniform(availableSpace.min_x, availableSpace.max_x), random.uniform(
             availableSpace.min_y, availableSpace.max_y)], radius=random.uniform(0.25, availableSpace.radius()*0.5), color=GroundColor(g1))
         g2 = Ground([random.uniform(availableSpace.min_x, availableSpace.max_x), random.uniform(
             availableSpace.min_y, availableSpace.max_y)], radius=random.uniform(0.25, availableSpace.radius()*0.5), color=GroundColor(g2))
 
         return Connection(conn_start=GroundColor(t1).name.lower(), conn_end=GroundColor(t2).name.lower(), conn_range=conn_range, ground_area_1=g1, ground_area_2=g2)
-    
+
     def configure(self) -> ObjectiveFunction:
-        grounds = {"ground_1": DMGround(self.ground_area_1.pos, self.ground_area_1.radius, self.ground_area_1.color), "ground_2": DMGround(self.ground_area_2.pos, self.ground_area_2.radius, self.ground_area_2.color)}
-        return ObjConnection(self.conn_start, self.conn_end, self.conn_range, grounds = grounds)
-    
-    
+        grounds = {"ground_1": DMGround(self.ground_area_1.pos, self.ground_area_1.radius, self.ground_area_1.color), "ground_2": DMGround(
+            self.ground_area_2.pos, self.ground_area_2.radius, self.ground_area_2.color)}
+        return ObjConnection(self.conn_start, self.conn_end, self.conn_range, grounds=grounds)
+
+
 @dataclass
 class Distribution(Objective):
     max_connection_range: float
     area_width: float
     area_length: float
-    
+
     def describe(self) -> List[str]:
         return [f"The objective of the mission is, that the robots cover an area with length {self.area_length} m and width {self.area_width} m while staying connected. Two robots are connected if their distance is below {self.max_connection_range}. ",
                 f"The robots should keep a pairwise distance not larger than {self.max_connection_range} and cover an area of {self.area_width} x {self.area_length} m². ",
@@ -106,27 +105,29 @@ class Distribution(Objective):
                 f"The mission's aim is for the robots to stay pairwise connected, ensuring their distance is not larger than {self.max_connection_range} meters, while covering an area of {self.area_width} x {self.area_length} square meters. ",
                 f"The swarm's mission is to cover an area of {self.area_width} meters by {self.area_length} meters while staying connected. Connectivity is defined such that every robot is transitively connected to each other, and two robots are connected if their distance is at or below {self.max_connection_range} meters. ",
                 f"The primary objective for the swarm is to cover an area of {self.area_width} by {self.area_length} meters while maintaining connectivity. "
-            ]
+                ]
 
-    
     @staticmethod
     def sample(availableSpace: AvailableSpace) -> Self:
-        width = random.uniform(0.5, availableSpace.max_x - availableSpace.min_x)
-        length = random.uniform(0.5, availableSpace.max_y - availableSpace.min_y)
-        mr = random.uniform(0.05, min(width,length)/2.0)
-        
+        width = random.uniform(
+            0.5, availableSpace.max_x - availableSpace.min_x)
+        length = random.uniform(
+            0.5, availableSpace.max_y - availableSpace.min_y)
+        mr = random.uniform(0.05, min(width, length)/2.0)
+
         return Distribution(mr, width, length)
-    
+
     def configure(self) -> ObjectiveFunction:
         return ObjDistribution([self.area_width, self.area_length], max_connection_distance=self.max_connection_range)
-        
-@dataclass        
+
+
+@dataclass
 class Foraging(Objective):
     start_area: str
     target_area: str
     ground_area_1: Ground
     ground_area_2: Ground
-    
+
     def describe(self) -> List[str]:
         return [f"There is a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The objective for the robots is to bring items from the {self.start_area} start area to the {self.target_area} circle. ",
                 f"Two circles are present—one at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters, colored in {self.ground_area_1.color.name.lower()}, and another at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The robots' task is to transport items from the {self.start_area} starting area to the {self.target_area} circle. ",
@@ -138,9 +139,8 @@ class Foraging(Objective):
                 f"Within this space, you'll encounter two circles—one located at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters, displaying a {self.ground_area_1.color.name.lower()} shade, and another at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The assigned task for the robots is to transport items from the {self.start_area} origin to the {self.target_area} circle. ",
                 f"Observe a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters, adorned in {self.ground_area_1.color.name.lower()}, and another at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters, characterized by its {self.ground_area_2.color.name.lower()} hue. The robots' foraging mission is to convey items from the {self.start_area} starting location to the {self.target_area} circle. ",
                 f"Two circles are situated in this space—one at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters, exhibiting a {self.ground_area_1.color.name.lower()} color, and another at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters, covered in {self.ground_area_2.color.name.lower()}. The robots are assigned the task of transporting items from the {self.start_area} source location to the {self.target_area} sink. "
-            ]
+                ]
 
-    
     @staticmethod
     def sample(availableSpace: AvailableSpace) -> Self:
         t1, t2 = random.sample([1, 2], 2)
@@ -151,7 +151,8 @@ class Foraging(Objective):
             availableSpace.min_y, availableSpace.max_y)], radius=random.uniform(0.25, availableSpace.radius()*0.25), color=GroundColor(g2))
 
         return Foraging(start_area=GroundColor(t1).name.lower(), target_area=GroundColor(t2).name.lower(), ground_area_1=g1, ground_area_2=g2)
-    
+
     def configure(self) -> ObjectiveFunction:
-        grounds = {"ground_1": DMGround(self.ground_area_1.pos, self.ground_area_1.radius, self.ground_area_1.color), "ground_2": DMGround(self.ground_area_2.pos, self.ground_area_2.radius, self.ground_area_2.color)}
+        grounds = {"ground_1": DMGround(self.ground_area_1.pos, self.ground_area_1.radius, self.ground_area_1.color), "ground_2": DMGround(
+            self.ground_area_2.pos, self.ground_area_2.radius, self.ground_area_2.color)}
         return ObjForaging(start=self.start_area, end=self.target_area, grounds=grounds)

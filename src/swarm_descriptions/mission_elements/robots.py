@@ -1,7 +1,8 @@
 
 
 from dataclasses import dataclass
-from typing import List, Self
+from typing import List
+from typing_extensions import Self
 from swarm_descriptions.datamodel import RobotSwarm
 from swarm_descriptions.mission_elements.datatypes import Robots
 from swarm_descriptions.utils import AvailableSpace
@@ -15,18 +16,17 @@ class CenteredSwarm(Robots):
 
     def describe(self) -> List[str]:
         return [
-                    f"There are {self.num_robots} robots placed uniformly around the center within a radius of {self.radius} meters. ",
-                    f"{self.num_robots} robots are evenly distributed around the origin within a radius of {self.radius} m. ",
-                    f"Within a {self.radius}-meter radius around the center, {self.num_robots} robots are evenly positioned. ",
-                    f"Uniformly distributed are {self.num_robots} robots within a radius of {self.radius} meters. ",
-                    f"{self.num_robots} robots are evenly spaced around the central point, spanning a radius of {self.radius} m. ",
-                    f"Placed within a {self.radius}-meter radius around the center are {self.num_robots} robots. ",
-                    f"Around the central point, {self.num_robots} robots are positioned uniformly within a {self.radius}-meter radius. ",
-                    f"{self.num_robots} robots are evenly placed around the center, covering a radius of {self.radius} meters. ",
-                    f"Within a {self.radius}-meter radius from the center, {self.num_robots} robots are uniformly distributed. ",
-                    f"Evenly positioned around the origin are {self.num_robots} robots within a radius of {self.radius} meters. "
-                ]
-
+            f"There are {self.num_robots} robots placed uniformly around the center within a radius of {self.radius} meters. ",
+            f"{self.num_robots} robots are evenly distributed around the origin within a radius of {self.radius} m. ",
+            f"Within a {self.radius}-meter radius around the center, {self.num_robots} robots are evenly positioned. ",
+            f"Uniformly distributed are {self.num_robots} robots within a radius of {self.radius} meters. ",
+            f"{self.num_robots} robots are evenly spaced around the central point, spanning a radius of {self.radius} m. ",
+            f"Placed within a {self.radius}-meter radius around the center are {self.num_robots} robots. ",
+            f"Around the central point, {self.num_robots} robots are positioned uniformly within a {self.radius}-meter radius. ",
+            f"{self.num_robots} robots are evenly placed around the center, covering a radius of {self.radius} meters. ",
+            f"Within a {self.radius}-meter radius from the center, {self.num_robots} robots are uniformly distributed. ",
+            f"Evenly positioned around the origin are {self.num_robots} robots within a radius of {self.radius} meters. "
+        ]
 
     @staticmethod
     def sample(availableSpace: AvailableSpace) -> Self:
