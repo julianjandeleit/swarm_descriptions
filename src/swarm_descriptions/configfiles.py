@@ -79,12 +79,13 @@ def build_light(id: str,  position: str, orientation: str, intensity: str) -> ET
     orientation = t2s(orientation)
     return ET.Element("light", attrib={"id": id, "position": position, "orientation": orientation, "color": "yellow", "intensity": intensity, "medium": "leds"})
 
+
 def build_ground_area(position: str, radius: str, color: GroundColor) -> ET.Element:
     position = t2s(position)
     radius = t2s(radius)
     color = color.name.lower()
     return ET.Element("circle", attrib={"position": position, "radius": radius, "color": color})
-    
+
 
 def build_wall(id: str, size: str, position: str, orientation: str) -> ET.Element:
     size = t2s(size)
@@ -105,23 +106,21 @@ def build_size(size: tuple[float, float, float]) -> ET.Element:
 
 def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
     loop_data = f"""<T>
-            <spawnCircle position="0,0" radius="{t2s(obj.spawn_radius)}"/>
+            <spawnCircle position="0,0,0" radius="{t2s(obj.spawn_radius)}"/>
     </T>"""
     loop = ET.fromstring(loop_data)
     loop = list(loop)
 
     el_obj = ET.Element("objective", attrib={"type": obj.type})
-    
-            
-    for id, area in obj.grounds.items():
-        loop.append(build_ground_area(position=area.position, radius=area.radius, color=area.color))
 
+    for id, area in obj.grounds.items():
+        loop.append(build_ground_area(position=area.position,
+                    radius=area.radius, color=area.color))
 
     if isinstance(obj, ObjAggregation):
         op = ET.Element("objective-params",
                         attrib={"target-color": obj.target, "radius": str(obj.radius)})
         el_obj.append(op)
-
 
     if isinstance(obj, ObjDistribution):
         op = ET.Element("objective-params", attrib={"area": t2s(
@@ -141,7 +140,8 @@ def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
 def env_visitor(env: Environment) -> list[ET.Element]:
     elems = []
     for id, light in env.lights.items():
-        elems.append(build_light(id, light.pose.position, light.pose.heading, str(light.intensity)))
+        elems.append(build_light(id, light.pose.position,
+                     light.pose.heading, str(light.intensity)))
 
     for id, wall in env.walls.items():
         elems.append(build_wall(
@@ -179,23 +179,23 @@ class Configurator:
 
     def generate_config_params(self, mission: Mission) -> ET.Element:
         """only return params that change.
-                
+
         this replaces the template, however it may be simpler to learn only the configuration params that change instead.
         this config would then later be needed to be parsed and replaced in the template
         """
         swarm_elems = swarm_visitor(mission.swarm)
         env_elems = env_visitor(mission.environment)
         objective_elems = objective_visitor(mission.objective)
-        
+
         root = ET.Element("config")
         swarm_elems_node = ET.Element("swarm-elems")
         env_elems_node = ET.Element("env-elems")
         objective_elems_node = ET.Element("objective-elems")
-        
+
         [swarm_elems_node.append(n) for n in swarm_elems]
         [env_elems_node.append(n) for n in env_elems]
         [objective_elems_node.append(n) for n in objective_elems]
-        
+
         root.append(swarm_elems_node)
         root.append(env_elems_node)
         root.append(objective_elems_node)
@@ -220,13 +220,12 @@ class Configurator:
         arena.remove(arena_attrib)
 
         return root
-    
+
     def convert_config_params(self, params: ET.Element, skeleton_root: ET.Element) -> ET.Element:
         swarm_elems = params.find("swarm-elems")
         env_elems = params.find("env-elems")
         objective_elems = params.find("objective-elems")
-        
-        
+
         root = deepcopy(skeleton_root)
         replace_placeholder_mut(root, "loop-placeholder", objective_elems)
         replace_placeholder_mut(root, "environment-placeholder", env_elems)
