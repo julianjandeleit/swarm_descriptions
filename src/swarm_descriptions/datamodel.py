@@ -108,7 +108,7 @@ class ObjectiveFunction:
 class ObjAggregation(ObjectiveFunction):
 
     def __init__(self, radius: float, target_color: str, **kwds):
-        super().__init__("aggregation,", **kwds)
+        super().__init__("aggregation", **kwds)
         self.radius = radius
         self.target = target_color
 
@@ -121,21 +121,19 @@ class ObjConnection(ObjectiveFunction):
         self.connection_range = connection_range
 
 
-class ObjFlocking(ObjectiveFunction):
-    def __init__(self, density: float, velocity: float, **kwds):
-        super().__init__(**kwds)
-        self.type = "flocking"
-        self.density = density
-        self.velocity = velocity
-
-
 class ObjDistribution(ObjectiveFunction):
 
     def __init__(self, area: tuple[float, float], max_connection_distance: float, **kwds):
-        super().__init__(**kwds)
-        self.type = "distribution"
+        super().__init__(type="distribution", grounds=dict(),**kwds)
         self.area = area
         self.max_connection_dist = max_connection_distance
+
+
+class ObjForaging(ObjectiveFunction):
+    def __init__(self, start: str, end: str, grounds: dict[str, Ground], **kwds):
+        super().__init__(type="foraging", grounds=grounds, **kwds)
+        self.start_area = start
+        self.target_area = end
 
 
 @dataclass

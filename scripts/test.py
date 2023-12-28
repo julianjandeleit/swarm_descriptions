@@ -53,10 +53,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logging.basicConfig(level=arg_to_loglevel(args.logging))
 
-    arena_elements = [ CircularArena, RectangularArena]
+    arena_elements = [CircularArena, RectangularArena]
     light_elements = [UniformLights]
     robot_elements = [CenteredSwarm]
-    objective_elements = [Aggregation]
+    objective_elements = [Foraging, Connection, Aggregation, Distribution]
 
     def sample_element(elements):
         return random.sample(elements, 1)[0]

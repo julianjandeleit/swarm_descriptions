@@ -131,6 +131,11 @@ def objective_visitor(obj: ObjectiveFunction) -> list[ET.Element]:
         op = ET.Element("objective-params", attrib={"conn_start": str(obj.conn_start),
                         "conn_end": str(obj.conn_end), "connection_range": t2s(obj.connection_range)})
         el_obj.append(op)
+        
+    if isinstance(obj, ObjForaging):
+        op = ET.Element("objective-params", attrib={"source": str(obj.start_area),
+                        "sink": str(obj.target_area)})
+        el_obj.append(op)
 
     loop.append(el_obj)
 
