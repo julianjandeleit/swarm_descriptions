@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import logging
 from typing import Dict, Optional, Self, List, Tuple
 import random
 from swarm_descriptions.datamodel import Light, Pose
@@ -21,8 +22,8 @@ class UniformLights(Lights):
 
     @staticmethod
     def sample(availableSpace: AvailableSpace | None) -> Self:
-
-        num = random.randint(0, 6)
+        logging.debug(availableSpace)
+        num = random.randint(0, 4)
         lights: List[LightConfig] = [LightConfig(
             random.uniform(availableSpace.min_x, availableSpace.max_x),
             random.uniform(availableSpace.min_y, availableSpace.max_y),

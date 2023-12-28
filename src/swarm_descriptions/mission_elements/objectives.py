@@ -23,9 +23,9 @@ class Aggregation(Objective):
         t1, _ = random.sample([1, 2], 2)
         g1, g2 = random.sample([1, 2], 2)
         g1 = Ground([random.uniform(availableSpace.min_x, availableSpace.max_x), random.uniform(
-            availableSpace.min_y, availableSpace.max_y)], radius=random.uniform(0.05, availableSpace.radius()), color=GroundColor(g1))
+            availableSpace.min_y, availableSpace.max_y)], radius=random.uniform(0.25, availableSpace.radius()*0.5), color=GroundColor(g1))
         g2 = Ground([random.uniform(availableSpace.min_x, availableSpace.max_x), random.uniform(
-            availableSpace.min_y, availableSpace.max_y)], radius=random.uniform(0.05, availableSpace.radius()), color=GroundColor(g2))
+            availableSpace.min_y, availableSpace.max_y)], radius=random.uniform(0.25, availableSpace.radius()*0.5), color=GroundColor(g2))
 
         return Aggregation(t1, g1, g2)
 

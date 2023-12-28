@@ -1,3 +1,4 @@
+import argparse
 from swarm_descriptions.configfiles import Configurator, config_to_string, ET
 from swarm_descriptions.datamodel import Mission
 from swarm_descriptions.datamodel import Environment as DMEnv
@@ -7,6 +8,14 @@ from swarm_descriptions.mission_elements.lights import *
 from swarm_descriptions.mission_elements.robots import *
 from swarm_descriptions.mission_elements.objectives import *
 
+def arg_to_loglevel(choice):
+    if choice == "critical":
+        return logging.CRITICAL
+    if choice == "info":
+        return logging.INFO
+    if choice == "debug":
+        return logging.DEBUG
+    return logging.INFO
 
 @dataclass
 class MissionParams:
@@ -36,8 +45,15 @@ class MissionParams:
 
 
 if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser(description='Print generated data')
+    parser.add_argument(
+        "--logging", choices=["critical", "info", "debug"], default="info")
 
-    arena_elements = [CircularArena, RectangularArena]
+    args = parser.parse_args()
+    logging.basicConfig(level=arg_to_loglevel(args.logging))
+
+    arena_elements = [ CircularArena, RectangularArena]
     light_elements = [UniformLights]
     robot_elements = [CenteredSwarm]
     objective_elements = [Aggregation]

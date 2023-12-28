@@ -19,7 +19,7 @@ class CenteredSwarm(Robots):
     @staticmethod
     def sample(availableSpace: AvailableSpace) -> Self:
         radius = availableSpace.radius()
-        radius = random.uniform(min(0.1, radius), radius)
+        radius = random.uniform(max(0.25, radius/2.0), radius)
         num = random.randint(5, 25)
         return CenteredSwarm(radius, num)
 

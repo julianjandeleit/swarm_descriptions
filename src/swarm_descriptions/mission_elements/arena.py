@@ -18,7 +18,7 @@ class CircularArena(Arena):
 
     @staticmethod
     def sample() -> "CircularArena":
-        return CircularArena(radius=random.uniform(0.0, 15.0), height=random.uniform(0.5, 3), num_walls=random.randint(3, 25))
+        return CircularArena(radius=random.uniform(1.0, 5.0), height=random.uniform(1, 3), num_walls=random.randint(3, 25))
 
     def environment(self) -> Environment:
         side_length_outer_square = 2*self.radius + 2.0  # with padding 2
@@ -42,7 +42,7 @@ class CircularArena(Arena):
 
         min_z = 0
         max_z = height / 2.0
-        return AvailableSpace(min_x, max_x, min_y, max_y, min_z, max_z)
+        return AvailableSpace(min_y, max_y, min_x, max_x, min_z, max_z)
 
 
 @dataclass
@@ -56,9 +56,9 @@ class RectangularArena(Arena):
 
     @staticmethod
     def sample() -> "RectangularArena":
-        length = random.uniform(0.2, 15.0)
-        width = random.uniform(0.2, 15.0)
-        height = random.uniform(0.5, 3.0)
+        length = random.uniform(1.0, 7.5)
+        width = random.uniform(1.0, 7.5)
+        height = random.uniform(1.0, 3.0)
         return RectangularArena(length, width, height)
 
     def environment(self) -> Environment:
@@ -66,7 +66,7 @@ class RectangularArena(Arena):
 
     def configure(self) -> Dict[str, Wall]:
         walls = {f"wall_{i}": w for i, w in enumerate(
-            utils.generate_square_of_walls(self.length, self.width))}
+            utils.generate_square_of_walls(self.width, self.length))}
         return walls
 
     def available_space(self) -> AvailableSpace:
@@ -81,4 +81,4 @@ class RectangularArena(Arena):
         min_z = 0
         max_z = height / 2.0
 
-        return AvailableSpace(min_x, max_x, min_y, max_y, min_z, max_z)
+        return AvailableSpace(min_y, max_y, min_x, max_x, min_z, max_z) # x, y swapped
