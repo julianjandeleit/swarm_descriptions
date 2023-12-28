@@ -23,6 +23,14 @@ class MissionParams:
     lights_params: Lights
     robots_params: Robots
     objective_params: Objective
+    
+    def describe(self):
+        ads = self.arena_params.describe()
+        lds = self.lights_params.describe()
+        rds = self.robots_params.describe()
+        ods = self.objective_params.describe()
+        
+        return [ad+ld+rd+od for ad in ads for ld in lds for rd in rds for od in ods]
 
     def configure(self):
         env = self.arena_params.environment()
@@ -71,7 +79,10 @@ if __name__ == "__main__":
         arena, lights_generator.sample(arena.available_space()), robots_generator.sample(arena.available_space()), objective_generator.sample(arena.available_space()))
 
     config_str = config_to_string(generator.configure())
+    config_str = utils.truncate_floats(config_str)
     skeleton = ET.parse("ressources/skeleton.argos").getroot()
     argos_str = Configurator().convert_config_params(generator.configure(), skeleton)
     argos_str = config_to_string(argos_str)
-    print(argos_str)
+    argos_str = utils.truncate_floats(argos_str)
+    #print(argos_str)
+    print(utils.truncate_floats(random.sample(generator.describe(),1)[0]))

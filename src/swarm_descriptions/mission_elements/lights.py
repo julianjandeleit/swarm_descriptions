@@ -18,7 +18,20 @@ class UniformLights(Lights):
     lights: List[LightConfig]
 
     def describe(self) -> List[str]:
-        return [f"There are {len(self.lights)} lights distributed evenly in the arena. "]
+        if len(self.lights) == 0:
+            return [f"There are {len(self.lights)} lights distributed evenly in the arena. ", f"{len(self.lights)} lights are distributed uniformly in the arena. "]
+        return [
+                    f"There are {len(self.lights)} lights distributed evenly in the arena. ",
+                    f"In the arena, {len(self.lights)} lights are evenly spread out with intensities {', '.join([str(light.intensity) for light in self.lights])}. ",
+                    f"The arena is illuminated by {len(self.lights)} lights evenly distributed across the space. ",
+                    f"{len(self.lights)} lights are evenly positioned throughout the arena, providing illumination. Their intensities are {', '.join([str(light.intensity) for light in self.lights])}. ",
+                    f"The space is lit with {len(self.lights)} lights evenly distributed. Positions are ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}). ",
+                    f"In this setting, {len(self.lights)} lights are placed euniformly in the arena. Light intensities range from {min([light.intensity for light in self.lights])} to {max([light.intensity for light in self.lights])}. ",
+                    f"Evenly distributed throughout the environment are {len(self.lights)} lights. Their positions are ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}). ",
+                    f"There are the following lights in the arena: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}). ",
+                    f"The arena features {len(self.lights)} lights: {', '.join([f'({light.x}, {light.y}, {light.intensity})' for light in self.lights])}. ",
+                    f"{len(self.lights)} lights are distributed uniformly in the arena. "
+                ]
 
     @staticmethod
     def sample(availableSpace: AvailableSpace | None) -> Self:

@@ -14,7 +14,18 @@ class CircularArena(Arena):
     num_walls: int
 
     def describe(self) -> List[str]:
-        return [f"{self.radius}"]
+        return [
+                    f"The environment consists of a circular arena with radius {self.radius}, made out of {self.num_walls} walls. The environment is {self.height} high. ",
+                    f"The environment is a circle made out of {self.num_walls} walls. ",
+                    f"The environment is a circular arena with radius {self.radius} m. ",
+                    f"The arena has a radius of {self.radius} m. ",
+                    f"The circular arena, having a radius of {self.radius} meters, is constructed with {self.num_walls} walls. ",
+                    f"The environment features a circle composed of {self.num_walls} walls. ",
+                    f"In this setting, a circular arena with a radius of {self.radius} meters is established. ",
+                    f"The circular arena, constructed with {self.num_walls} walls, has a radius of {self.radius} m. ",
+                    f"A circle with {self.num_walls} walls forms the structure of the environment. ",
+                    f"With a radius of {self.radius} meters, the circular arena is made up of {self.num_walls} walls. "
+                ]
 
     @staticmethod
     def sample() -> "CircularArena":
@@ -52,7 +63,19 @@ class RectangularArena(Arena):
     height: float
 
     def describe(self) -> List[str]:
-        return [f"{self.length}, {self.width}"]
+        return [
+                    f"The environment consists of a rectangular area with length {self.length}, width {self.width}, and height {self.height}.",
+                    f"The area is a rectangle with dimensions {self.length} x {self.width} x {self.height}.",
+                    f"The environment is a rectangular area with length {self.length} m, width {self.width} m, and height {self.height} m.",
+                    f"The rectangular area has dimensions {self.length} m x {self.width} m x {self.height} m.",
+                    f"The environment is constructed as a rectangular space with a length of {self.length} meters, width of {self.width} meters, and height of {self.height} meters.",
+                    f"In this setting, a rectangle is formed with dimensions {self.length} x {self.width} x {self.height}.",
+                    f"A rectangular area, with a length of {self.length} meters, width of {self.width} meters, and height of {self.height} meters, is established.",
+                    f"The rectangular space is {self.length} m long, {self.width} m wide, and {self.height} m high.",
+                    f"The environment features a rectangle with dimensions {self.length} x {self.width} x {self.height}.",
+                    f"With a length of {self.length} meters, width of {self.width} meters, and height of {self.height} meters, the area is rectangular in shape."
+               ]
+
 
     @staticmethod
     def sample() -> "RectangularArena":
