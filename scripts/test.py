@@ -9,6 +9,7 @@ from swarm_descriptions.mission_elements.lights import *
 from swarm_descriptions.mission_elements.robots import *
 from swarm_descriptions.mission_elements.objectives import *
 
+
 def arg_to_loglevel(choice):
     if choice == "critical":
         return logging.CRITICAL
@@ -20,7 +21,7 @@ def arg_to_loglevel(choice):
 
 
 if __name__ == "__main__":
-    
+
     parser = argparse.ArgumentParser(description='Print generated data')
     parser.add_argument(
         "--logging", choices=["critical", "info", "debug"], default="info")
@@ -39,4 +40,5 @@ if __name__ == "__main__":
     argos_str = config_to_string(argos_str)
     argos_str = utils.truncate_floats(argos_str)
     print(argos_str)
-    print(utils.truncate_floats(random.sample(generator.describe(),1)[0]))
+    print(utils.truncate_floats(random.sample(generator.describe(), 1)[0]))
+    print(len(generator.describe()))
