@@ -4,6 +4,7 @@ import pathlib
 import pandas as pd
 import os
 import subprocess
+import numpy as np
 from swarm_descriptions.configfiles import Configurator, ET, config_to_string
 import time
 from nltk.translate.bleu_score import sentence_bleu
@@ -87,13 +88,16 @@ def evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_ou
     
     # BLEU Score
     if len(dataset) == 0:
-        bleu_score = 0.0
+        bleu_score_mean = 0.0
+        bleu_score_var = 0.0
     else:
         ref = [sentence_bleu([row.configuration], row.response) for i, row in dataset.iterrows()]
-        bleu_score = ref[0]
-    print(f"{bleu_score=}")
+        bleu_score_mean = np.mean(ref)
+        bleu_score_var = np.var(ref)
+    print(f"{bleu_score_mean=}")
+    print(f"{bleu_score_var=}")
     
-    return {"bleu_score": bleu_score, "invalid_config_params": share_nones, "invalid_argos_configs": share_invalid_configs}
+    return {"bleu_score_mean": bleu_score_mean, "bleu_score_var": bleu_score_var,"invalid_config_params": share_nones, "invalid_argos_configs": share_invalid_configs}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='evaluate finetune results dataset. requires valid docker argos install, including setting xhost +local:docker.')
