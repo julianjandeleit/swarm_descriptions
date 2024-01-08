@@ -16,24 +16,25 @@ def arg_to_loglevel(choice):
         return logging.DEBUG
     return logging.INFO
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='evaluate finetune results dataset. requires valid docker argos install, including setting xhost +local:docker.')
-    parser.add_argument(
-        "--logging", choices=["critical", "info", "debug"], default="info")
-    parser.add_argument("dataset", type=pathlib.Path)
-    parser.add_argument("--template", type=pathlib.Path, default=pathlib.Path("ressources/skeleton.argos"))
-    parser.add_argument("--docker", type=pathlib.Path, default=pathlib.Path("/opt/argos/custom/docker"))
-    parser.add_argument("--mission-out", type=pathlib.Path, default=pathlib.Path("/tmp/mission.argos"))
 
-    args = parser.parse_args()
-    logging.basicConfig(level=arg_to_loglevel(args.logging))
+def evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_out_path):
+    """Evaluate dataset of single checkpoint
 
-    dataset = args.dataset
-    logging.info(f"dataset={dataset}")
+    Args:
+        dataset_path (pathlib.Path): dataset as pickeled pd
+        template_path (pathlib.Path): path to skeleton.argos
+        docker_compose_dir (pathlib.Path): path to docker compose directory that executes argos
+        mission_out_path (dict): bleu score, share of invalid config-params, share of invalid argos files (share total of argos files are based on total number of _valid_ config-params)
+
+    Returns:
+        dict: Metrics
+    """
+    dataset = dataset_path
+    print(f"{dataset=}")
     dataset = pd.read_pickle(dataset)
     logging.info(f"dataset-columns={dataset.columns}")
     
-    skeleton = ET.parse(args.template)
+    skeleton = ET.parse(template_path)
     def response_to_argos_config(params):
         try:
             xml = ET.fromstring(params)
@@ -51,16 +52,17 @@ if __name__ == "__main__":
     share_nones = dataset.argos_config.apply(lambda x: x == None).sum() / dataset.shape[0]
     print(f"{share_nones=}")
     dataset = dataset.dropna()
-    os.chdir(args.docker)
+    old_dir = os.getcwd()
+    os.chdir(docker_compose_dir)
     
     # INVALID argos configs
     
     def run_in_argos(config):
         time.sleep(1)
-        with open(args.mission_out, "w") as text_file:
+        with open(mission_out_path, "w") as text_file:
             # logging.debug(f"{config=}")
             text_file.write(config)
-        process = subprocess.Popen("ARGOS_FILE=/tmp/mission.argos docker-compose up --build", shell=True, stdout=subprocess.PIPE)
+        process = subprocess.Popen("ARGOS_FILE=/tmp/mission.argos docker-compose up --build", shell=True, stdout=subprocess.PIPE) #TODO: ARGOS_FILE needs to be equal to mission out and not hardcoded to specific value
         out_lines = []
         for line in iter(process.stdout.readline, ''):
             if line == b'':
@@ -73,12 +75,61 @@ if __name__ == "__main__":
         time.sleep(1) # allow cleanup time
         return success
     
-    # successes = [run_in_argos(ac) for ac in dataset.argos_config]
-    # share_invalid_configs = sum(successes) / float(len(successes))
-    # print(f"{share_invalid_configs=}")
+    successes = [run_in_argos(ac) for ac in dataset.argos_config]
+    if len(successes) == 0:
+        share_invalid_configs = 1.0
+    else:
+        share_invalid_configs = sum(successes) / float(len(successes))
+    print(f"{share_invalid_configs=}")
+    
+    # go back to actual working dir to avoid side effects and allow calling multiple times in a row
+    os.chdir(old_dir)
     
     # BLEU Score
-    ref = [sentence_bleu([row.configuration], row.response) for i, row in dataset.iterrows()]
-    print(ref[0])
+    if len(dataset) == 0:
+        bleu_score = 0.0
+    else:
+        ref = [sentence_bleu([row.configuration], row.response) for i, row in dataset.iterrows()]
+        bleu_score = ref[0]
+    print(f"{bleu_score=}")
     
+    return {"bleu_score": bleu_score, "invalid_config_params": share_nones, "invalid_argos_configs": share_invalid_configs}
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='evaluate finetune results dataset. requires valid docker argos install, including setting xhost +local:docker.')
+    parser.add_argument(
+        "--logging", choices=["critical", "info", "debug"], default="info")
+    parser.add_argument("dataset", type=pathlib.Path, help="Pickled Dataset as pd.DataFrame or directory of those.")
+    parser.add_argument("--template", type=pathlib.Path, default=pathlib.Path("ressources/skeleton.argos"))
+    parser.add_argument("--docker", type=pathlib.Path, default=pathlib.Path("/opt/argos/custom/docker"))
+    parser.add_argument("--mission-out", type=pathlib.Path, default=pathlib.Path("/tmp/mission.argos"))
+    parser.add_argument("--result-out", type=pathlib.Path, default=None, help="csv file where result dataframe should be written to")
+
+    args = parser.parse_args()
+    logging.basicConfig(level=arg_to_loglevel(args.logging))
+    
+    dataset_path = args.dataset
+    template_path = args.template
+    docker_compose_dir = args.docker
+    mission_out_path = args.mission_out
+    result_out_path = args.result_out
+    
+    ds = []
+    if dataset_path.is_dir():
+        individual_datasets = list(dataset_path.iterdir())
+        logging.info(f"{individual_datasets=}")
+        for dataset in individual_datasets:
+            res = evaluate_dataset(dataset, template_path, docker_compose_dir, mission_out_path)
+            res["dataset"] = str(dataset.stem)
+            ds.append(res)
+    else:
+        res = evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_out_path)
+        res["dataset"] = str(dataset_path.stem)
+        ds.append(res)
+        
+    if result_out_path:
+        logging.info(f"Writing metrics to \"{result_out_path}\"")
+        pd.DataFrame(ds).to_csv(result_out_path, index=False)
+        
+        
     # TODO: Additionally add manual Evaluation
