@@ -4,22 +4,14 @@ import pathlib
 import pandas as pd
 import time
 import os
-
-def arg_to_loglevel(choice):
-    if choice == "critical":
-        return logging.CRITICAL
-    if choice == "info":
-        return logging.INFO
-    if choice == "debug":
-        return logging.DEBUG
-    return logging.INFO
+from swarm_descriptions.utils import arg_to_loglevel
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='evaluate finetune results dataset. requires valid docker argos install, including setting xhost +local:docker.')
+    parser = argparse.ArgumentParser(description='Unpack pickled datasets dictionary. You can leave default arguments for data in ressources directory when called from project level.', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
-        "--logging", choices=["critical", "info", "debug"], default="info")
-    parser.add_argument("datasets", type=pathlib.Path, help="path to pickled datasets dict")
-    parser.add_argument("--workdir", type=pathlib.Path, help="directory to place individual datasets into. Will be crated if not exists.", default="/tmp/datasets")
+        "--logging", choices=["critical", "info", "debug"], help="log level", default="info")
+    parser.add_argument("--datasets", type=pathlib.Path, help="path to pickled datasets dict", default="ressources/data/eval_datasets.pickle")
+    parser.add_argument("--workdir", type=pathlib.Path, help="directory to place individual datasets into. Will be crated if not exists.", default="ressources/data/eval_checkpoints/")
 
     args = parser.parse_args()
     logging.basicConfig(level=arg_to_loglevel(args.logging))

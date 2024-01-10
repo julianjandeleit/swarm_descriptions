@@ -37,6 +37,7 @@ if __name__ == "__main__":
     config_str = utils.truncate_floats(config_str)
     skeleton = ET.parse("ressources/skeleton.argos").getroot()
     argos_str = Configurator().convert_config_params(generator.configure(), skeleton)
+    #argos_str = generator.configure()
     argos_str = config_to_string(argos_str)
     argos_str = utils.truncate_floats(argos_str)
     print(argos_str)

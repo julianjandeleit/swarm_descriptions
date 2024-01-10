@@ -52,7 +52,7 @@ def evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_ou
     
     share_nones = dataset.argos_config.apply(lambda x: x == None).sum() / dataset.shape[0]
     print(f"{share_nones=}")
-    dataset = dataset.dropna()
+    #dataset = dataset.dropna()
     old_dir = os.getcwd()
     os.chdir(docker_compose_dir)
     
@@ -76,11 +76,11 @@ def evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_ou
         time.sleep(1) # allow cleanup time
         return success
     
-    successes = [run_in_argos(ac) for ac in dataset.argos_config]
-    if len(successes) == 0:
+    dataset["argos_success"] = [run_in_argos(ac) if ac else False for ac in dataset.argos_config]
+    if len(dataset) == 0:
         share_invalid_configs = 1.0
     else:
-        share_invalid_configs = sum(successes) / float(len(successes))
+        share_invalid_configs = sum(dataset.argos_success) / float(len(dataset))
     print(f"{share_invalid_configs=}")
     
     # go back to actual working dir to avoid side effects and allow calling multiple times in a row
@@ -97,7 +97,7 @@ def evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_ou
     print(f"{bleu_score_mean=}")
     print(f"{bleu_score_var=}")
     
-    return {"bleu_score_mean": bleu_score_mean, "bleu_score_var": bleu_score_var,"invalid_config_params": share_nones, "invalid_argos_configs": share_invalid_configs}
+    return {"bleu_score_mean": bleu_score_mean, "bleu_score_var": bleu_score_var,"invalid_config_params": share_nones, "invalid_argos_configs": share_invalid_configs}, dataset
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='evaluate finetune results dataset. requires valid docker argos install, including setting xhost +local:docker.')
@@ -123,12 +123,14 @@ if __name__ == "__main__":
         individual_datasets = list(dataset_path.iterdir())
         logging.info(f"{individual_datasets=}")
         for dataset in individual_datasets:
-            res = evaluate_dataset(dataset, template_path, docker_compose_dir, mission_out_path)
+            res, df = evaluate_dataset(dataset, template_path, docker_compose_dir, mission_out_path)
             res["dataset"] = str(dataset.stem)
+            df.to_pickle(dataset)
             ds.append(res)
     else:
-        res = evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_out_path)
+        res, df = evaluate_dataset(dataset_path, template_path, docker_compose_dir, mission_out_path)
         res["dataset"] = str(dataset_path.stem)
+        df.to_pickle(dataset_path)
         ds.append(res)
         
     if result_out_path:

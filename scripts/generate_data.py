@@ -4,9 +4,8 @@ import yaml
 import argparse
 import pathlib
 import sys
-from swarm_descriptions import missions
-from swarm_descriptions import descriptions
 from swarm_descriptions.configfiles import ET, Configurator, config_to_string
+from swarm_descriptions.mission_elements import MissionParams, get_generators
 from swarm_descriptions.utils import sample_describer_missions, save_mission_dataset
 import pandas as pd
 from dataclasses import asdict
@@ -27,7 +26,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Print generated data')
 
     parser.add_argument('output',
-                        help='"description", "config", "config-params", "write-mission", "read-mission", "dataset"')
+                        help='"describe", "configure"')
     parser.add_argument(
         "--logging", choices=["critical", "info", "debug"], default="info")
     parser.add_argument("--template", type=pathlib.Path, help="path to template argos file",
@@ -45,36 +44,19 @@ if __name__ == "__main__":
         np.random.seed(args.seed)
         random.seed(args.seed)
 
-    dm_modules = [
-        # (missions.aggregation, descriptions.aggregation),
-        # (missions.foraging, descriptions.foraging),
-        # (missions.distribution, descriptions.distribution),
-        (missions.connection, descriptions.connection)
-    ]
+    mission = MissionParams.sample(*get_generators())
+    logging.info(f"{mission=}")
     
-    # dm_modules = [
-    #     (missions.aggregation, descriptions.aggregation),]
+    if args.output == "describe":
 
-    describer, get_mission, params, labels = sample_describer_missions(dm_modules)
-    logging.info(f"sampled {labels}")
-    
-    if args.output == "description":
-
-        description = describer(params)
+        description = random.sample(mission.describe(),1)[0]
         print(description)
-
-    elif args.output == "config":
-        skeleton = ET.parse(args.template).getroot()
-        # config = Configurator().generate_config(
-        #     skeleton, get_mission(params))
-        config = Configurator().generate_config_params(get_mission(params))
-        print(config_to_string(Configurator().convert_config_params(config, skeleton)))
         
-    elif args.output == "config-params":
+    elif args.output == "configure":
         skeleton = ET.parse(args.template).getroot()
         # config = Configurator().generate_config(
         #     skeleton, get_mission(params))
-        config = Configurator().generate_config_params(get_mission(params))
+        config = mission.configure()
         print(config_to_string(config))
         
     elif args.output == "write-mission":

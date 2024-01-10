@@ -216,6 +216,15 @@ class AvailableSpace:
     def radius(self):
         avs = self
         return min(avs.max_x-avs.min_x, avs.max_y-avs.min_y)/2.0
+    
+def arg_to_loglevel(choice):
+    if choice == "critical":
+        return logging.CRITICAL
+    if choice == "info":
+        return logging.INFO
+    if choice == "debug":
+        return logging.DEBUG
+    return logging.INFO
 
 @dataclass
 class BaseParams:
