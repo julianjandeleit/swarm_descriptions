@@ -33,7 +33,7 @@ Finetuning and inference was done on Kaggle.
  - [Behavior Trees as a Control Architecture in the Automatic Modular Design of Robot Swarms](https://link.springer.com/chapter/10.1007/978-3-030-00533-7_3) by Kuckling et. al.
 
 # Association
-This work is part of my masters project at the University of Konstanz. Find the project report at `project_report.pdf`.
+This work is part of my masters project at the University of Konstanz. Find the project report at `project_report.pdf` or the presentation at `project_slides.pdf`.
 
 # Troubleshooting
  
