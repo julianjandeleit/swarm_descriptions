@@ -17,7 +17,7 @@ class Aggregation(Objective):
     ground_area_2: Ground
 
     def describe(self) -> List[str]:
-        agg_target = GroundColor(self.agg_target).name.lower()
+        agg_target = self.ground_area_1.color.name if self.agg_target == 1 else self.ground_area_2.color.name
         return [
             f"There is a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. The objective is for the robots to aggregate at the {agg_target} circle. ",
             f"The goal is for the robots to aggregate at the {agg_target} circle. There are two areas on the floor: a circle at {self.ground_area_1.pos} with a radius of {self.ground_area_1.radius} meters in {self.ground_area_1.color.name.lower()}, and another circle at {self.ground_area_2.pos} with a radius of {self.ground_area_2.radius} meters in {self.ground_area_2.color.name.lower()}. ",
