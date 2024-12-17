@@ -5,7 +5,7 @@ from swarm_descriptions.datamodel import Mission
 
 from swarm_descriptions.mission_elements.datatypes import *
 from .arena import CircularArena, RectangularArena
-from .lights import UniformLights
+from .lights import TargetLights, UniformLights
 from .robots import CenteredSwarm
 from .objectives import Foraging, Connection, Aggregation, Distribution
 from swarm_descriptions.datamodel import Environment as DMEnv
@@ -13,7 +13,7 @@ from swarm_descriptions.datamodel import ObjectiveFunction as DMObj
 
 def get_generators():
     arena_elements = [CircularArena, RectangularArena]
-    light_elements = [UniformLights]
+    light_elements = [UniformLights, TargetLights]
     robot_elements = [CenteredSwarm]
     objective_elements = [Foraging, Connection, Aggregation, Distribution]
     
@@ -38,8 +38,9 @@ class MissionParams:
         objective_generator = sample_element(objective_elements)
 
         arena = arena_generator.sample()
+        objective = objective_generator.sample(arena.available_space())
         generator = MissionParams(
-            arena, lights_generator.sample(arena.available_space()), robots_generator.sample(arena.available_space()), objective_generator.sample(arena.available_space()))   
+            arena, lights_generator.sample(arena.available_space(), objective), robots_generator.sample(arena.available_space()), objective)   
         return generator
     
     def describe(self):
