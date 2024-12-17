@@ -68,16 +68,16 @@ class TargetLights(Lights):
     "No lighting is present in the arena at this time."
 ]
         basic_lights = [
-    f"There are {len(self.lights)} lights in the arena located at the following coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"In this setting, {len(self.lights)} lights are positioned at coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"The field is illuminated by {len(self.lights)} lights, which can be found at: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"{len(self.lights)} lights are placed throughout the area, with their coordinates being: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"The space is lit with {len(self.lights)} lights, situated at the following positions: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"In this terrain, {len(self.lights)} lights are arranged, located at coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"Throughout the environment, there are {len(self.lights)} lights found at these coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"The following lights are present in the arena at coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"The area features {len(self.lights)} lights, positioned at the following coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
-    f"{len(self.lights)} lights illuminate the space, located at: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])})."
+    # f"There are {len(self.lights)} lights in the arena located at the following coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"In this setting, {len(self.lights)} lights are positioned at coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"The field is illuminated by {len(self.lights)} lights, which can be found at: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"{len(self.lights)} lights are placed throughout the area, with their coordinates being: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"The space is lit with {len(self.lights)} lights, situated at the following positions: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"In this terrain, {len(self.lights)} lights are arranged, located at coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"Throughout the environment, there are {len(self.lights)} lights found at these coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"The following lights are present in the arena at coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"The area features {len(self.lights)} lights, positioned at the following coordinates: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])}).",
+    # f"{len(self.lights)} lights illuminate the space, located at: ({', '.join([f'({light.x}, {light.y})' for light in self.lights])})."
         ]
         
         objective = self.objective
